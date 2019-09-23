@@ -1,0 +1,11 @@
+
+# .vscode is intentionally added to the project, and thusly isn't in the .gitignore.
+.ionide/
+data/
+Data/
+obj/
+bin/
+*.txt
+
+# Place desired text files here.
+!LICENSE.txt
