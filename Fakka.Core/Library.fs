@@ -1,4 +1,5 @@
-﻿namespace Fakka.Core
+﻿
+namespace Fakka.Core
 
 module Say =
     let hello name =
