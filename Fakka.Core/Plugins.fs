@@ -34,15 +34,15 @@ module Plugins =
             try
                 let asm = this.Load assemblyName
                 if isNull asm then
-                    NullReferenceException () |> AssemblyNull |> Error
+                    NullReferenceException ("Path to assembly is null") |> AssemblyNull |> Error
                 else
                     Ok asm
             with
-                | :? ArgumentException       as ex1 -> Error (Argument ex1)
-                | :? BadImageFormatException as ex2 -> Error (BadImageFormat ex2)
-                | :? FileLoadException       as ex3 -> Error (FileLoad ex3)
-                | :? FileNotFoundException   as ex4 -> Error (FileNotFound ex4)
-                |                               ex0 -> Error (Other ex0)
+                | :? ArgumentException       as ex1 -> Error <| Argument ex1
+                | :? BadImageFormatException as ex2 -> Error <| BadImageFormat ex2
+                | :? FileLoadException       as ex3 -> Error <| FileLoad ex3
+                | :? FileNotFoundException   as ex4 -> Error <| FileNotFound ex4
+                |                               ex0 -> Error <| Other ex0
     
     type PluginContext = {
         assembly : Assembly
@@ -50,7 +50,7 @@ module Plugins =
     }
     
     [<MethodImpl(MethodImplOptions.NoInlining)>]
-    let loadAssembly (assemblyPath : String) (assemblyName: AssemblyName) =
+    let loadAssemblyName (assemblyPath : String) (assemblyName: AssemblyName) =
         let asmldr = PluginLoadContext (assemblyPath)
         let masm = asmldr.LoadAssembly(assemblyName)
         match masm with
@@ -59,6 +59,10 @@ module Plugins =
                 unload   = asmldr.Unload
             }
         | Error ex -> Error ex
+    
+    let loadAssembly (assemblyPath : String) =
+        raise (NotImplementedException ())
+        ()
     
     let unloadAssembly (asmcontext : PluginContext) =
         asmcontext.unload ()
