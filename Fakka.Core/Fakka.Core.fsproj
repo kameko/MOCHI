@@ -2,11 +2,8 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>4.7</LangVersion>
-    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Library.fs" />
     <Compile Include="Plugins.fs" />
   </ItemGroup>
   <ItemGroup>
