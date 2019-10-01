@@ -4,11 +4,22 @@ namespace Fakka.Core
 module Plugins =
 
     open System
+    open System.IO
     open System.Reflection
     open System.Runtime.Loader
-
+    open System.Runtime.CompilerServices
+    
+    type PluginLoadContextError =
+        | None
+        | AssemblyNull   of NullReferenceException
+        | Argument       of ArgumentException
+        | BadImageFormat of BadImageFormatException
+        | FileLoad       of FileLoadException
+        | FileNotFound   of FileNotFoundException
+        | Other          of Exception
+    
     type private PluginLoadContext (loadPath: String) =
-        inherit AssemblyLoadContext ()
+        inherit AssemblyLoadContext (true)
         
         let resolver = AssemblyDependencyResolver(loadPath)
         
@@ -20,15 +31,36 @@ module Plugins =
                 this.LoadFromAssemblyPath(assemblyPath)
 
         member this.LoadAssembly (assemblyName: AssemblyName) =
-            let asm = this.Load assemblyName // TODO: try/catch
-            if isNull asm then
-                None
-            else
-                Some asm
-
+            try
+                let asm = this.Load assemblyName
+                if isNull asm then
+                    NullReferenceException () |> AssemblyNull |> Error
+                else
+                    Ok asm
+            with
+                | :? ArgumentException       as ex1 -> Error (Argument ex1)
+                | :? BadImageFormatException as ex2 -> Error (BadImageFormat ex2)
+                | :? FileLoadException       as ex3 -> Error (FileLoad ex3)
+                | :? FileNotFoundException   as ex4 -> Error (FileNotFound ex4)
+                |                               ex0 -> Error (Other ex0)
+    
+    type PluginContext = {
+        assembly : Assembly
+        unload   : unit -> unit
+    }
+    
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
     let loadAssembly (assemblyPath : String) (assemblyName: AssemblyName) =
         let asmldr = PluginLoadContext (assemblyPath)
         let masm = asmldr.LoadAssembly(assemblyName)
         match masm with
-        | Some asm -> Some asm
-        | None -> None
+        | Ok asm -> Ok {
+                assembly = asm
+                unload   = asmldr.Unload
+            }
+        | Error ex -> Error ex
+    
+    let unloadAssembly (asmcontext : PluginContext) =
+        asmcontext.unload ()
+    
+    
