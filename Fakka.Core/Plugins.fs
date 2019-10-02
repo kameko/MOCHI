@@ -10,12 +10,11 @@ module Plugins =
     open System.Runtime.CompilerServices
     
     type PluginLoadContextError =
-        | None
-        | AssemblyNull   of NullReferenceException
-        | Argument       of ArgumentException
         | BadImageFormat of BadImageFormatException
-        | FileLoad       of FileLoadException
+        | AssemblyNull   of NullReferenceException
         | FileNotFound   of FileNotFoundException
+        | Argument       of ArgumentException
+        | FileLoad       of FileLoadException
         | Other          of Exception
     
     type private PluginLoadContext (loadPath: String) =
@@ -38,11 +37,11 @@ module Plugins =
                 else
                     Ok asm
             with
-                | :? NullReferenceException  as ex -> Error <| AssemblyNull ex
-                | :? ArgumentException       as ex -> Error <| Argument ex
                 | :? BadImageFormatException as ex -> Error <| BadImageFormat ex
-                | :? FileLoadException       as ex -> Error <| FileLoad ex
+                | :? NullReferenceException  as ex -> Error <| AssemblyNull ex
                 | :? FileNotFoundException   as ex -> Error <| FileNotFound ex
+                | :? ArgumentException       as ex -> Error <| Argument ex
+                | :? FileLoadException       as ex -> Error <| FileLoad ex
                 |                               ex -> Error <| Other ex
     
     type PluginContext = {
@@ -86,3 +85,4 @@ module Plugins =
             else
                 kurikaesu wref (count - 1)
         kurikaesu weakref 10
+    
