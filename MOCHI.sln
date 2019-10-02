@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fakka.Core", "Fakka.Core\Fakka.Core.fsproj", "{C8853CD9-29E7-4EF8-B9C1-554C604E8193}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Core", "Mochi.Core\Mochi.Core.fsproj", "{C8853CD9-29E7-4EF8-B9C1-554C604E8193}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fakka.Client", "Fakka.Client\Fakka.Client.fsproj", "{C379D453-F9F0-4484-96B4-47AE07711C42}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Client", "Mochi.Client\Mochi.Client.fsproj", "{C379D453-F9F0-4484-96B4-47AE07711C42}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fakka.Server", "Fakka.Server\Fakka.Server.fsproj", "{61DA7478-E2F6-4FA1-A630-21C42EE0F1D8}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Server", "Mochi.Server\Mochi.Server.fsproj", "{61DA7478-E2F6-4FA1-A630-21C42EE0F1D8}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fakka.Tests", "Fakka.Tests\Fakka.Tests.fsproj", "{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Tests", "Mochi.Tests\Mochi.Tests.fsproj", "{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

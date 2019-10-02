@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Fakka.Core\Fakka.Core.fsproj" />
+    <ProjectReference Include="..\Mochi.Core\Mochi.Core.fsproj" />
   </ItemGroup>
 
 </Project>

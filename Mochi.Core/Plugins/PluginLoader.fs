@@ -1,7 +1,7 @@
 
-namespace Fakka.Core
+namespace Mochi.Core
 
-module Plugins =
+module PluginLoader =
 
     open System
     open System.IO

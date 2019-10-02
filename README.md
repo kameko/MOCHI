@@ -1,5 +1,7 @@
 
-Simple actor-based Discord chatbot written in F#, mainly to help me get comfortable with F# and learn Akka.NET, as well as to act as a testbed for simple experiments. The name Fakka comes from F# + Akka, because I am absolutely hopeless at naming things.
+# MOCHI - MOdular CHat Interface
+
+Simple chatbot written in F# using Akka.NET. Primarily will target Discord but is intended to work for any platform. Primarily a learning experience for me to get used to F# and Akka, and as a testbed for experiments.
 
 See [TODO](Tools/Information/TODO.md) for planned features or features already implemented.
 

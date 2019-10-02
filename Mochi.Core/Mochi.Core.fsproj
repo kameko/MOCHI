@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Plugins.fs" />
+    <Compile Include="Plugins/PluginLoader.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Akka" Version="1.4.0-beta2" />
