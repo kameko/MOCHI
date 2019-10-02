@@ -8,7 +8,7 @@ module PluginLoader =
     open System.Reflection
     open System.Runtime.Loader
     open System.Runtime.CompilerServices
-    open Serilog
+    open Logging
     
     type PluginLoadContextError =
         | BadImageFormat of BadImageFormatException
@@ -92,11 +92,15 @@ module PluginLoader =
             if (not <| aref.isAlive ()) then
                 ()
             else if (count <= 0) then
+                (*
                 Log.Warning("[{source}.{caller}] " +
                     "Timeout reached while waiting for assembly to unload. Assembly may still be alive.",
                     
                     "Mochi.Core.PluginLoader", "ensureUnload"
                 )
+                *)
+                //Logging.warning "Timeout reached while waiting for assembly to unload. Assembly may still be alive."
+                log.warning "Timeout reached while waiting for assembly to unload. Assembly may still be alive."
                 ()
             else
                 kurikaesu aref (count - 1)
