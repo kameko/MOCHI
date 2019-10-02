@@ -13,6 +13,10 @@ module Plugins =
         | PluginFault
         | Reloading
     
+    type ReportReason =
+        | PluginUnloaded of UnloadReason
+        | PluginLoaded
+    
     type PluginEnvironment = {
         plugins : list<Plugin>
     }
@@ -21,7 +25,7 @@ module Plugins =
         loadDependencies : list<string> // plugins that must be loaded before this one can run.
         execDependencies : list<string> // plugins that must be running when this one is.
         onLoad           : PluginEnvironment -> Task // runs once after all dependencies are resolved
-        onUpdate         : PluginEnvironment -> Task // runs after every time a plugin is loaded or unloaded
+        onReport         : PluginEnvironment -> ReportReason -> Task // runs after every time a plugin is loaded or unloaded
         onUnload         : UnloadReason -> Task
     }
     
