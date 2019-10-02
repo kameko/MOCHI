@@ -17,11 +17,21 @@ module Plugins =
         | PluginUnloaded of UnloadReason
         | PluginLoaded
     
+    type PluginInfo = {
+        description : string
+        published   : DateTime
+        author      : string
+        copyright   : string
+        license     : string
+    }
+    
     type PluginEnvironment = {
         plugins : list<Plugin>
     }
     and Plugin = {
         name             : string
+        version          : Version
+        info             : PluginInfo
         loadDependencies : list<string> // plugins that must be loaded before this one can run.
         execDependencies : list<string> // plugins that must be running when this one is.
         onLoad           : PluginEnvironment -> Task // runs once after all dependencies are resolved
