@@ -34,7 +34,6 @@ module Plugins =
             try
                 let asm = this.Load assemblyName
                 if isNull asm then
-                    //NullReferenceException ("Path to assembly is null") |> AssemblyNull |> Error
                     raise <| NullReferenceException "Path to assembly is null"
                 else
                     Ok asm
