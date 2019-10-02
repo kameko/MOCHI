@@ -54,8 +54,8 @@ module Plugins =
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let loadAssemblyName (assemblyPath : String) (assemblyName: AssemblyName) =
         let asmldr = PluginLoadContext (assemblyPath)
-        let wref = WeakReference(asmldr)
-        let masm = asmldr.LoadAssembly(assemblyName)
+        let wref   = WeakReference(asmldr)
+        let masm   = asmldr.LoadAssembly(assemblyName)
         match masm with
         | Ok asm -> Ok {
                 asmWeakRef = wref
@@ -64,9 +64,15 @@ module Plugins =
             }
         | Error ex -> Error ex
     
-    let loadAssembly (assemblyPath : String) =
-        raise <| NotImplementedException ()
-        ()
+    let loadAssemblyFullPath (fullPath : String) =
+        let asmname = AssemblyName (Path.GetFileNameWithoutExtension fullPath)
+        loadAssemblyName fullPath asmname
+    
+    let loadAssembly (relativePath : String) =
+        let currentPath = (Assembly.GetEntryAssembly ()).Location |> Path.GetDirectoryName
+        let fullPath    = Path.Combine [| currentPath; relativePath |]
+        let asmname     = AssemblyName (Path.GetFileNameWithoutExtension relativePath)
+        loadAssemblyName fullPath asmname
     
     let unloadAssembly (asmcontext : PluginContext) =
         asmcontext.unload ()
