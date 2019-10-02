@@ -8,6 +8,11 @@ module Plugins =
     open System.IO
     open System.Threading.Tasks
     
+    type UnloadReason =
+        | UserUnload
+        | PluginFault
+        | Reloading
+    
     type PluginEnvironment = {
         plugins : list<Plugin>
     }
@@ -15,8 +20,9 @@ module Plugins =
         name             : string
         loadDependencies : list<string> // plugins that must be loaded before this one can run.
         execDependencies : list<string> // plugins that must be running when this one is.
-        onLoad           : PluginEnvironment -> Task
-        onUnload         : unit -> Task
+        onLoad           : PluginEnvironment -> Task // runs once after all dependencies are resolved
+        onUpdate         : PluginEnvironment -> Task // runs after every time a plugin is loaded or unloaded
+        onUnload         : UnloadReason -> Task
     }
     
     let validPlugin (plugin : Plugin) =
