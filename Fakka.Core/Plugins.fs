@@ -34,37 +34,50 @@ module Plugins =
             try
                 let asm = this.Load assemblyName
                 if isNull asm then
-                    NullReferenceException ("Path to assembly is null") |> AssemblyNull |> Error
+                    //NullReferenceException ("Path to assembly is null") |> AssemblyNull |> Error
+                    raise <| NullReferenceException "Path to assembly is null"
                 else
                     Ok asm
             with
-                | :? ArgumentException       as ex1 -> Error <| Argument ex1
-                | :? BadImageFormatException as ex2 -> Error <| BadImageFormat ex2
-                | :? FileLoadException       as ex3 -> Error <| FileLoad ex3
-                | :? FileNotFoundException   as ex4 -> Error <| FileNotFound ex4
-                |                               ex0 -> Error <| Other ex0
+                | :? NullReferenceException  as ex -> Error <| AssemblyNull ex
+                | :? ArgumentException       as ex -> Error <| Argument ex
+                | :? BadImageFormatException as ex -> Error <| BadImageFormat ex
+                | :? FileLoadException       as ex -> Error <| FileLoad ex
+                | :? FileNotFoundException   as ex -> Error <| FileNotFound ex
+                |                               ex -> Error <| Other ex
     
     type PluginContext = {
-        assembly : Assembly
-        unload   : unit -> unit
+        asmWeakRef : WeakReference
+        assembly   : Assembly
+        unload     : unit -> unit
     }
     
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let loadAssemblyName (assemblyPath : String) (assemblyName: AssemblyName) =
         let asmldr = PluginLoadContext (assemblyPath)
+        let wref = WeakReference(asmldr)
         let masm = asmldr.LoadAssembly(assemblyName)
         match masm with
         | Ok asm -> Ok {
-                assembly = asm
-                unload   = asmldr.Unload
+                asmWeakRef = wref
+                assembly   = asm
+                unload     = asmldr.Unload
             }
         | Error ex -> Error ex
     
     let loadAssembly (assemblyPath : String) =
-        raise (NotImplementedException ())
+        raise <| NotImplementedException ()
         ()
     
     let unloadAssembly (asmcontext : PluginContext) =
         asmcontext.unload ()
     
-    
+    let ensureUnload (weakref : WeakReference) =
+        let rec kurikaesu (wref : WeakReference) count =
+            GC.Collect ()
+            GC.WaitForPendingFinalizers ()
+            if (not wref.IsAlive) || (count <= 0) then
+                ()
+            else
+                kurikaesu wref (count - 1)
+        kurikaesu weakref 10
