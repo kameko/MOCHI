@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Fakka.Tests/bin/Debug/netcoreapp3.0/Fakka.Tests.dll",
+            "program": "${workspaceFolder}/Mochi.Tests/bin/Debug/netcoreapp3.0/Mochi.Tests.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
