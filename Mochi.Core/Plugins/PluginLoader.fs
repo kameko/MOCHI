@@ -8,6 +8,7 @@ module PluginLoader =
     open System.Reflection
     open System.Runtime.Loader
     open System.Runtime.CompilerServices
+    open Serilog
     
     type PluginLoadContextError =
         | BadImageFormat of BadImageFormatException
@@ -44,9 +45,14 @@ module PluginLoader =
                 | :? FileLoadException       as ex -> Error <| FileLoad ex
                 |                               ex -> Error <| Other ex
     
+    type AssemblyReference = {
+        weakRef : WeakReference
+        isAlive : unit -> bool
+    }
+    
     type PluginContext = {
-        asmWeakRef : WeakReference
         assembly   : Assembly
+        asmref     : AssemblyReference
         unload     : unit -> unit
     }
     
@@ -57,9 +63,12 @@ module PluginLoader =
         let masm   = asmldr.LoadAssembly(assemblyName)
         match masm with
         | Ok asm -> Ok {
-                asmWeakRef = wref
-                assembly   = asm
-                unload     = fun () -> asmldr.Unload ()
+                assembly = asm
+                asmref   = {
+                    weakRef = wref
+                    isAlive = fun () -> wref.IsAlive
+                }
+                unload   = fun () -> asmldr.Unload ()
             }
         | Error ex -> Error ex
     
@@ -76,13 +85,20 @@ module PluginLoader =
     let unloadAssembly (asmcontext : PluginContext) =
         asmcontext.unload ()
     
-    let ensureUnload (weakref : WeakReference) =
-        let rec kurikaesu (wref : WeakReference) count =
+    let ensureUnload (asmref : AssemblyReference) =
+        let rec kurikaesu (aref : AssemblyReference) count =
             GC.Collect ()
             GC.WaitForPendingFinalizers ()
-            if (not wref.IsAlive) || (count <= 0) then
+            if (not <| aref.isAlive ()) then
+                ()
+            else if (count <= 0) then
+                Log.Warning("[{source}.{caller}] " +
+                    "Timeout reached while waiting for assembly to unload. Assembly may still be alive.",
+                    
+                    "Mochi.Core.PluginLoader", "ensureUnload"
+                )
                 ()
             else
-                kurikaesu wref (count - 1)
-        kurikaesu weakref 10
+                kurikaesu aref (count - 1)
+        kurikaesu asmref 10
     
