@@ -31,6 +31,7 @@ module Plugins =
     and Plugin = {
         name             : string
         version          : Version
+        guid             : Guid
         info             : PluginInfo
         loadDependencies : list<string> // plugins that must be loaded before this one can run.
         execDependencies : list<string> // plugins that must be running when this one is.
@@ -39,6 +40,7 @@ module Plugins =
         onUnload         : UnloadReason -> Task
     }
     
-    let validPlugin (plugin : Plugin) =
+    let isValidPlugin (plugin : Plugin) =
         let r1 = List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies
         not r1
+    
