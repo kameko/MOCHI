@@ -59,7 +59,7 @@ module PluginLoader =
         | Ok asm -> Ok {
                 asmWeakRef = wref
                 assembly   = asm
-                unload     = asmldr.Unload
+                unload     = fun () -> asmldr.Unload ()
             }
         | Error ex -> Error ex
     
