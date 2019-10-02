@@ -19,3 +19,6 @@ module Plugins =
         onUnload         : unit -> Task
     }
     
+    let validPlugin (plugin : Plugin) =
+        let r1 = List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies
+        not r1
