@@ -5,13 +5,7 @@ module Logging =
 
     open System
     open System.IO
-    open System.Reflection
-    open System.Runtime.Loader
-    open System.Runtime.CompilerServices
-    open System.Runtime.Serialization
     open System.Diagnostics
-    open Microsoft.FSharp.Reflection
-    open FSharp.Compiler.SourceCodeServices
     open Serilog
     
     // TODO: contain some solid information about the current build of
@@ -49,7 +43,12 @@ module Logging =
             and  set value = _exception <- value
         
         static member Create (scope, msg, excp) =
-            let stack = StackFrame (scope + 1, true)
+            let mutable stack = StackFrame (scope + 1, true)
+            if (stack.GetMethod ()).Name = "Invoke" then
+                // If the current call stack is "Invoke" (a lambda) that means we're
+                // probably inside the callback in the "syslog" functions below. we
+                // need to go up a frame to get the actual caller.
+                stack <- StackFrame (scope + 2, true)
             let mutable sl = StructuredLog ()
             sl.LogMessage       <- msg
             sl.CallerName       <- (stack.GetMethod ()).Name
@@ -66,59 +65,66 @@ module Logging =
         static member Create (scope, excp) =
             StructuredLog.Create (scope + 1, null, excp)
         
+        static member LogInfo (scope, msg) =
+            let sl = StructuredLog.Create (scope + 1, msg, null)
+            Log.Information ("{info}", sl)
+            Console.WriteLine(sl)
+            ()
+        
+        static member LogWarning (scope, msg) =
+            raise <| NotImplementedException ()
+            ()
+            
+        static member LogError(scope, msg) =
+            raise <| NotImplementedException ()
+            ()
+            
+        static member LogCritical (scope, msg) =
+            raise <| NotImplementedException ()
+            ()
+        
+        [<Conditional("DEBUG")>]
+        static member LogDebug (scope, msg) =
+            let sl = StructuredLog.Create (scope + 1, msg, null)
+            Log.Debug ("{info}", sl)
+            ()
+        
         member this.ToJson () =
             ()
         
         override this.ToString () =
-            // TODO: handle the presence of the Exception property not being null
-            String.Format("[{0}.{1} ({2}:{3})] {4}", 
-                this.CallerNamespace, 
-                this.CallerName, 
-                this.CallerFile, 
-                this.CallerLineNumber, 
-                this.LogMessage
-            )
-    
-    let getCallStack scope =
-        let stack = StackFrame (scope, true)
-        stack
-        (*
-        // can use this if we want to ignore subfunctions
-        if (stack.GetMethod ()).Name = "Invoke" then
-            StackFrame (scope + 1, true)
-        else
-            stack
-        *)
-    
-    let genJsonLog (stack : StackFrame) =
-        ()
+            if isNull this.Exception then
+                String.Format("[{0}.{1} ({2}:{3})] {4}", 
+                    this.CallerNamespace, 
+                    this.CallerName, 
+                    this.CallerFile, 
+                    this.CallerLineNumber, 
+                    this.LogMessage
+                )
+            else
+                String.Format("[{0}.{1} ({2}:{3})] {4}: {5}", 
+                    this.CallerNamespace, 
+                    this.CallerName, 
+                    this.CallerFile, 
+                    this.CallerLineNumber, 
+                    this.LogMessage,
+                    this.Exception
+                )
     
     let logInfo1 (msg : string) =
-        //scope of 2 instead of 1 because this becomes a lambda and we need to skip Invoke
-        let ls = StructuredLog.Create (2, msg)
-        Log.Information ("{info}", ls)
-        ()
+        StructuredLog.LogInfo (1, msg)
     
     let logWarning1 (msg : string) =
-        let ls = StructuredLog.Create (2, msg)
-        raise <| NotImplementedException ()
-        ()
+        StructuredLog.LogWarning (1, msg)
     
     let logError1 (msg : string) =
-        let ls = StructuredLog.Create (2, msg)
-        raise <| NotImplementedException ()
-        ()
+        StructuredLog.LogError (1, msg)
         
     let logCritical1 (msg : string) =
-        let ls = StructuredLog.Create (2, msg)
-        raise <| NotImplementedException ()
-        ()
+        StructuredLog.LogCritical (1, msg)
     
     let logDebug1 (msg : string) =
-        if Debugger.IsAttached then
-            let ls = StructuredLog.Create (2, msg)
-            raise <| NotImplementedException ()
-        ()
+        StructuredLog.LogDebug (1, msg)
     
     type Logger = {
         info     : string -> unit
@@ -135,3 +141,4 @@ module Logging =
         critical = logCritical1
         debug    = logDebug1
     }
+    
