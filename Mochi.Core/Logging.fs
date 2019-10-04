@@ -44,11 +44,6 @@ module Logging =
         
         static member Create (scope, msg, excp) =
             let mutable stack = StackFrame (scope + 1, true)
-            if (stack.GetMethod ()).Name = "Invoke" then
-                // If the current call stack is "Invoke" (a lambda) that means we're
-                // probably inside the callback in the "syslog" functions below. we
-                // need to go up a frame to get the actual caller.
-                stack <- StackFrame (scope + 2, true)
             let mutable sl = StructuredLog ()
             sl.LogMessage       <- msg
             sl.CallerName       <- (stack.GetMethod ()).Name
@@ -111,20 +106,20 @@ module Logging =
                     this.Exception
                 )
     
-    let logInfo1 (msg : string) =
-        StructuredLog.LogInfo (1, msg)
+    let logInfo1 (scope : int) (msg : string) =
+        StructuredLog.LogInfo (scope + 1, msg)
     
-    let logWarning1 (msg : string) =
-        StructuredLog.LogWarning (1, msg)
+    let logWarning1 (scope : int) (msg : string) =
+        StructuredLog.LogWarning (scope + 1, msg)
     
-    let logError1 (msg : string) =
-        StructuredLog.LogError (1, msg)
+    let logError1 (scope : int) (msg : string) =
+        StructuredLog.LogError (scope + 1, msg)
         
-    let logCritical1 (msg : string) =
-        StructuredLog.LogCritical (1, msg)
+    let logCritical1 (scope : int) (msg : string) =
+        StructuredLog.LogCritical (scope + 1, msg)
     
-    let logDebug1 (msg : string) =
-        StructuredLog.LogDebug (1, msg)
+    let logDebug1 (scope : int) (msg : string) =
+        StructuredLog.LogDebug (scope + 1, msg)
     
     type Logger = {
         info     : string -> unit
@@ -135,10 +130,10 @@ module Logging =
     }
     
     let syslog = {
-        info     = logInfo1
-        warning  = logWarning1
-        error    = logError1
-        critical = logCritical1
-        debug    = logDebug1
+        info     = logInfo1 1
+        warning  = logWarning1 1
+        error    = logError1 1
+        critical = logCritical1 1
+        debug    = logDebug1 1
     }
     
