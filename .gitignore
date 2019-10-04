@@ -1,6 +1,7 @@
 
 # .vscode is intentionally added to the project, and thusly isn't in the .gitignore.
 .ionide/
+.vs/
 data/
 Data/
 obj/
