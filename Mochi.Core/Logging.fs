@@ -8,9 +8,6 @@ module Logging =
     open System.Diagnostics
     open Serilog
     
-    // TODO: contain some solid information about the current build of
-    // the system, since the log will contain file and line number info.
-    // probably want both software version and some GUID unique to the build.
     type StructuredLog () =
         let mutable _callerName       : string = String.Empty
         let mutable _callerNamespace  : string = String.Empty
@@ -71,15 +68,21 @@ module Logging =
         
         static member private FormContext (sl : StructuredLog) =
             let mutable logger : ILogger = Log.Logger
-            logger <- logger.ForContext ("CallerName", sl.CallerName)
-            logger <- logger.ForContext ("CallerNamespace", sl.CallerNamespace)
-            logger <- logger.ForContext ("CallerFile", sl.CallerFile)
-            logger <- logger.ForContext ("CallerDirectory", sl.CallerDirectory)
-            logger <- logger.ForContext ("CallerLineNumber", sl.CallerLineNumber)
+            logger <- logger.ForContext ("CallerName"       , sl.CallerName)
+            logger <- logger.ForContext ("CallerNamespace"  , sl.CallerNamespace)
+            logger <- logger.ForContext ("CallerFile"       , sl.CallerFile)
+            logger <- logger.ForContext ("CallerDirectory"  , sl.CallerDirectory)
+            logger <- logger.ForContext ("CallerLineNumber" , sl.CallerLineNumber)
             logger
 
         static member LogInfo (scope, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, null)
+            let logger = StructuredLog.FormContext (sl)
+            logger.Information (msg)
+            ()
+
+        static member LogInfo (scope, msg, excp) =
+            let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
             logger.Information (msg)
             ()
@@ -89,15 +92,33 @@ module Logging =
             let logger = StructuredLog.FormContext (sl)
             logger.Warning (msg)
             ()
+
+        static member LogWarning (scope, msg, excp) =
+            let sl = StructuredLog.Create (scope + 1, msg, excp)
+            let logger = StructuredLog.FormContext (sl)
+            logger.Warning (msg)
+            ()
             
         static member LogError (scope, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, null)
             let logger = StructuredLog.FormContext (sl)
             logger.Error (msg)
             ()
+
+        static member LogError (scope, msg, excp) =
+            let sl = StructuredLog.Create (scope + 1, msg, excp)
+            let logger = StructuredLog.FormContext (sl)
+            logger.Error (msg)
+            ()
             
         static member LogFatal (scope, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, null)
+            let logger = StructuredLog.FormContext (sl)
+            logger.Fatal (msg)
+            ()
+
+        static member LogFatal (scope, msg, excp) =
+            let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
             logger.Fatal (msg)
             ()
@@ -109,7 +130,15 @@ module Logging =
             logger.Debug (msg)
             ()
 
+        [<Conditional("DEBUG")>]
+        static member LogDebug (scope, msg, excp) =
+            let sl = StructuredLog.Create (scope + 1, msg, excp)
+            let logger = StructuredLog.FormContext (sl)
+            logger.Debug (msg)
+            ()
+
         member this.ToJson () =
+            // TODO: json
             ()
         
         override this.ToString () =
@@ -142,23 +171,48 @@ module Logging =
         
     let logFatal1 (scope : int) (msg : string) =
         StructuredLog.LogFatal (scope + 1, msg)
-    
+        
     let logDebug1 (scope : int) (msg : string) =
         StructuredLog.LogDebug (scope + 1, msg)
+
+    let logInfo2 (scope : int) (msg : string) (excp : Exception) =
+        StructuredLog.LogInfo (scope + 1, msg, excp)
+    
+    let logWarning2 (scope : int) (msg : string) (excp : Exception) =
+        StructuredLog.LogWarning (scope + 1, msg, excp)
+    
+    let logError2 (scope : int) (msg : string) (excp : Exception) =
+        StructuredLog.LogError (scope + 1, msg, excp)
+        
+    let logFatal2 (scope : int) (msg : string) (excp : Exception) =
+        StructuredLog.LogFatal (scope + 1, msg, excp)
+    
+    let logDebug2 (scope : int) (msg : string) (excp : Exception) =
+        StructuredLog.LogDebug (scope + 1, msg, excp)
     
     type Logger = {
-        info    : string -> unit
-        warning : string -> unit
-        error   : string -> unit
-        fatal   : string -> unit
-        debug   : string -> unit
+        info     : string -> unit
+        warning  : string -> unit
+        error    : string -> unit
+        fatal    : string -> unit
+        debug    : string -> unit
+        info2    : string -> Exception -> unit
+        warning2 : string -> Exception -> unit
+        error2   : string -> Exception -> unit
+        fatal2   : string -> Exception -> unit
+        debug2   : string -> Exception -> unit
     }
     
     let syslog = {
-        info    = logInfo1 1
-        warning = logWarning1 1
-        error   = logError1 1
-        fatal   = logFatal1 1
-        debug   = logDebug1 1
+        info     = logInfo1    1
+        warning  = logWarning1 1
+        error    = logError1   1
+        fatal    = logFatal1   1
+        debug    = logDebug1   1
+        info2    = logInfo2    1
+        warning2 = logWarning2 1
+        error2   = logError2   1
+        fatal2   = logFatal2   1
+        debug2   = logDebug2   1
     }
     
