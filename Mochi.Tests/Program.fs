@@ -8,6 +8,9 @@ module Program =
     open Mochi.Core.Logging
     
     let mytest _ =
+        Mochi.Core.GCMonitor.monitor ()
+        Mochi.Core.GCMonitor.subscribe (fun _ -> syslog.info "wooow GC")
+        Mochi.Core.GCMonitor.start ()
         let depth = 0
         logInfo1 depth "logInfo top level"
         syslog.info "syslog.info top level"
@@ -21,14 +24,16 @@ module Program =
             innerFunc2 ()
             ()
         innerFunc ()
+        GC.Collect ()
+        GC.WaitForPendingFinalizers ()
     
     let setupLogging _ =
         let mutable conf = LoggerConfiguration ()
         conf <- conf.WriteTo.Console (outputTemplate = 
             "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
-            "[{CallerNamespace}.{CallerName} ({CallerFile}:{CallerLineNumber})] " + 
-            "{NewLine} --> " +
-            "{Message:lj}{NewLine}{Exception}"
+            "[{CallerNamespace}.{CallerName} ({CallerFile}:{CallerLineNumber})]: " + 
+            //"{NewLine} --> " +
+            "{Message:lj}. {NewLine}{Exception}"
         )
         Log.Logger <- conf.CreateLogger ()
         ()
