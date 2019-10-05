@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -21,8 +21,6 @@
     <PackageReference Include="LiteDB" Version="5.0.0-alpha" />
     <PackageReference Include="LiteDB.FSharp" Version="2.12.0" />
     <PackageReference Include="Serilog" Version="2.9.0-dev-01124" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00824" />
-    <PackageReference Include="Serilog.Sinks.File" Version="4.1.0-dev-00850" />
     <PackageReference Include="System.Reflection.MetadataLoadContext" Version="4.6.0" />
   </ItemGroup>
 </Project>
