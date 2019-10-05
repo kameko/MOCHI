@@ -25,7 +25,7 @@ module Program =
     let setupLogging _ =
         let mutable conf = LoggerConfiguration ()
         conf <- conf.WriteTo.Console (outputTemplate = 
-            "[{Timestamp:HH:mm:ss.ff} {Level:u3}] " + 
+            "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
             "[{CallerNamespace}.{CallerName} ({CallerFile}:{CallerLineNumber})] " + 
             "{NewLine} --> " +
             "{Message:lj}{NewLine}{Exception}"

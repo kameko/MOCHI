@@ -1,4 +1,4 @@
-
+﻿
 namespace Mochi.Core
 
 module Logging =
@@ -49,6 +49,8 @@ module Logging =
                 // Caller is a lambda, we have to treat this special
                 let ns = ((stack.GetMethod ()).ReflectedType).FullName.Split '+'
                 let fn = (ns.[1]).Split '@'
+                // if we ever want to get the line number the lambda is defined on, since it contains that in it's name:
+                // sl.CallerName       <- String.Format("{0} (Line {1})", fn.[0], ((fn.[1]).Substring(0, (fn.[1].Length - 1))))
                 sl.CallerName       <- fn.[0]
                 sl.CallerNamespace  <- ns.[0]
             else
@@ -68,7 +70,8 @@ module Logging =
             StructuredLog.Create (scope + 1, null, excp)
         
         static member private FormContext (sl : StructuredLog) =
-            let mutable logger : ILogger = Log.ForContext ("CallerName", sl.CallerName)
+            let mutable logger : ILogger = Log.Logger
+            logger <- logger.ForContext ("CallerName", sl.CallerName)
             logger <- logger.ForContext ("CallerNamespace", sl.CallerNamespace)
             logger <- logger.ForContext ("CallerFile", sl.CallerFile)
             logger <- logger.ForContext ("CallerDirectory", sl.CallerDirectory)
