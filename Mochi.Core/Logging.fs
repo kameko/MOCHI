@@ -41,12 +41,19 @@ module Logging =
         member this.LogMessage
             with get ()    = _logMessage
             and  set value = _logMessage <- value
-
+        
         static member Create (scope, msg, excp) =
             let stack = StackFrame (scope + 1, true)
             let sl = StructuredLog ()
-            sl.CallerName       <- (stack.GetMethod ()).Name
-            sl.CallerNamespace  <- ((stack.GetMethod ()).ReflectedType).FullName
+            if (stack.GetMethod ()).Name = "Invoke" then
+                // Caller is a lambda, we have to treat this special
+                let ns = ((stack.GetMethod ()).ReflectedType).FullName.Split '+'
+                let fn = (ns.[1]).Split '@'
+                sl.CallerName       <- fn.[0]
+                sl.CallerNamespace  <- ns.[0]
+            else
+                sl.CallerName       <- (stack.GetMethod ()).Name
+                sl.CallerNamespace  <- ((stack.GetMethod ()).ReflectedType).FullName
             sl.CallerFile       <- Path.GetFileName (stack.GetFileName ())
             sl.CallerDirectory  <- Path.GetDirectoryName (stack.GetFileName ())
             sl.CallerLineNumber <- (stack.GetFileLineNumber ())
