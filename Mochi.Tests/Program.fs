@@ -27,6 +27,48 @@ module Program =
         GC.Collect ()
         GC.WaitForPendingFinalizers ()
     
+    let mytest2 _ =
+        Mochi.Core.GCMonitor.monitor ()
+        Mochi.Core.GCMonitor.start ()
+        let mutable run = true
+        let mutable str = String.Empty
+        Console.WriteLine "Lets do it"
+        while run do
+            Console.Write "> "
+            str <- Console.ReadLine ()
+            match str with
+            | "q" -> run <- false
+            | _ -> ()
+    
+    let mytest3 _ =
+        Mochi.Core.GCMonitor.monitor ()
+        Mochi.Core.GCMonitor.start ()
+        Console.WriteLine "Lets do it"
+        let mutable interrupt = false
+        let mutable run = true
+        let mutable count = 0
+        Mochi.Core.GCMonitor.subscribe (fun _ -> interrupt <- true)
+        while run do
+            if interrupt then
+                Console.WriteLine("INTERRUPTED")
+                interrupt <- false
+                while not (Console.ReadKey(true).Key = ConsoleKey.C) do
+                    ()
+            if Console.KeyAvailable then
+                if (Console.ReadKey(true).Key = ConsoleKey.Q) then
+                    Console.WriteLine("Execution ended.")
+                    run <- false
+                if (Console.ReadKey(true).Key = ConsoleKey.P) then
+                    while not (Console.ReadKey(true).Key = ConsoleKey.C) do
+                        ()
+            else
+                System.Threading.Thread.Sleep(10)
+                let guid1 = ((Guid.NewGuid ()).ToString()).ToUpper()
+                let guid2 = ((Guid.NewGuid ()).ToString()).ToUpper()
+                Console.WriteLine("{0} {1} ({2})", guid1, guid2, count)
+                count <- count + 1
+                
+
     let setupLogging _ =
         let mutable conf = LoggerConfiguration ()
         conf <- conf.WriteTo.Console (outputTemplate = 
@@ -41,7 +83,7 @@ module Program =
     [<EntryPoint>]
     let main _ =
         setupLogging ()
-        mytest ()
+        mytest3 ()
         // Console.ReadLine () |> ignore
         0
 
