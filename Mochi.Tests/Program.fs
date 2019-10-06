@@ -8,7 +8,6 @@ module Program =
     open Mochi.Core.Logging
     
     let mytest _ =
-        Mochi.Core.GCMonitor.monitor ()
         Mochi.Core.GCMonitor.subscribe (fun _ -> syslog.info "wooow GC")
         Mochi.Core.GCMonitor.start ()
         let depth = 0
@@ -28,7 +27,6 @@ module Program =
         GC.WaitForPendingFinalizers ()
     
     let mytest2 _ =
-        Mochi.Core.GCMonitor.monitor ()
         Mochi.Core.GCMonitor.start ()
         let mutable run = true
         let mutable str = String.Empty
@@ -36,12 +34,26 @@ module Program =
         while run do
             Console.Write "> "
             str <- Console.ReadLine ()
-            match str with
-            | "q" -> run <- false
-            | _ -> ()
+            if str = "q" then
+                run <- false
+            let strs = str.Split()
+            if strs.Length > 1 then
+                let strindex = str.IndexOf(" ") + 1
+                str <- str.Substring strindex
+                match (strs.[0]).ToLower () with
+                | "warn"  | "warning"   -> syslog.warning str
+                | "error"               -> syslog.error str
+                | "fatal" | "critical"  -> syslog.fatal str
+                | "debug"               -> syslog.debug str
+                | "console"             -> Console.WriteLine str
+                | "info"  | _           -> syslog.info str
+            else if not (String.IsNullOrEmpty(str) || String.IsNullOrWhiteSpace(str)) then
+                match (strs.[0]).ToLower () with
+                | "gc"  -> GC.Collect(); GC.WaitForPendingFinalizers()
+                | "q"   -> ()
+                | _     -> syslog.info str
     
     let mytest3 _ =
-        Mochi.Core.GCMonitor.monitor ()
         Mochi.Core.GCMonitor.start ()
         Console.WriteLine "Lets do it"
         let mutable interrupt = false
@@ -71,6 +83,7 @@ module Program =
 
     let setupLogging _ =
         let mutable conf = LoggerConfiguration ()
+        conf <- conf.MinimumLevel.Debug()
         conf <- conf.WriteTo.Console (outputTemplate = 
             "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
             "[{CallerNamespace}.{CallerName} ({CallerFile}:{CallerLineNumber})]: " + 
@@ -83,7 +96,7 @@ module Program =
     [<EntryPoint>]
     let main _ =
         setupLogging ()
-        mytest3 ()
+        mytest2 ()
         // Console.ReadLine () |> ignore
         0
 
