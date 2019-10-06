@@ -6,6 +6,8 @@ module Logging =
     open System
     open System.IO
     open System.Diagnostics
+    open System.Text.Json
+    open System.Text.Json.Serialization
     open Serilog
     
     type StructuredLog () =
@@ -137,10 +139,18 @@ module Logging =
             logger.Debug (msg)
             ()
 
+        member this.ToJson (options : JsonSerializerOptions) =
+            JsonSerializer.Serialize<StructuredLog>(this, options)
+
+        member this.ToJson (pretty : bool) =
+            let options = JsonSerializerOptions (
+                            WriteIndented = pretty
+                          )
+            this.ToJson options
+
         member this.ToJson () =
-            // TODO: json
-            ()
-        
+            this.ToJson false
+            
         override this.ToString () =
             if isNull this.Exception then
                 String.Format("[{0}.{1} ({2}:{3})] {4}", 
