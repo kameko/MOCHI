@@ -7,9 +7,7 @@ module Program =
     open Serilog
     open Mochi.Core.Logging
     
-    let mytest _ =
-        Mochi.Core.GCMonitor.subscribe (fun _ -> syslog.info "wooow GC")
-        Mochi.Core.GCMonitor.start ()
+    let ``Test function logging stack frame depth`` _ =
         let depth = 0
         logInfo1 depth "logInfo top level"
         syslog.info "syslog.info top level"
@@ -23,39 +21,8 @@ module Program =
             innerFunc2 ()
             ()
         innerFunc ()
-        GC.Collect ()
-        GC.WaitForPendingFinalizers ()
     
-    let mytest2 _ =
-        Mochi.Core.GCMonitor.start ()
-        let mutable run = true
-        let mutable str = String.Empty
-        Console.WriteLine "Lets do it"
-        while run do
-            Console.Write "> "
-            str <- Console.ReadLine ()
-            if str = "q" then
-                run <- false
-            let strs = str.Split()
-            if strs.Length > 1 then
-                let strindex = str.IndexOf(" ") + 1
-                str <- str.Substring strindex
-                match (strs.[0]).ToLower () with
-                | "warn"  | "warning"   -> syslog.warning str
-                | "error"               -> syslog.error str
-                | "fatal" | "critical"  -> syslog.fatal str
-                | "debug"               -> syslog.debug str
-                | "console"             -> Console.WriteLine str
-                | "info"  | _           -> syslog.info str
-            else if not (String.IsNullOrEmpty(str) || String.IsNullOrWhiteSpace(str)) then
-                match (strs.[0]).ToLower () with
-                | "gc"  -> GC.Collect(); GC.WaitForPendingFinalizers()
-                | "q"   -> ()
-                | _     -> syslog.info str
-    
-    let mytest3 _ =
-        Mochi.Core.GCMonitor.start ()
-        Console.WriteLine "Lets do it"
+    let ``Test GCMonitor runs multiple times`` _ =
         let mutable interrupt = false
         let mutable run = true
         let mutable count = 0
@@ -79,7 +46,34 @@ module Program =
                 let guid2 = ((Guid.NewGuid ()).ToString()).ToUpper()
                 Console.WriteLine("{0} {1} ({2})", guid1, guid2, count)
                 count <- count + 1
-                
+
+    let commandReader _ =
+        let mutable run = true
+        let mutable str = String.Empty
+        Console.WriteLine "Lets do it"
+        while run do
+            Console.Write "> "
+            str <- Console.ReadLine ()
+            if str = "q" then
+                run <- false
+            let strs = str.Split()
+            if strs.Length > 1 then
+                let strindex = str.IndexOf(" ") + 1
+                let nstr = str.Substring strindex
+                match (strs.[0]).ToLower () with
+                | "warn"  | "warning"   -> syslog.warning nstr
+                | "error"               -> syslog.error nstr
+                | "fatal" | "critical"  -> syslog.fatal nstr
+                | "debug"               -> syslog.debug nstr
+                | "console"             -> Console.WriteLine nstr
+                | "info"                -> syslog.info nstr
+                | _                     -> syslog.info str
+            else if not (String.IsNullOrEmpty(str) || String.IsNullOrWhiteSpace(str)) then
+                match (strs.[0]).ToLower () with
+                | "gc"    -> GC.Collect(); GC.WaitForPendingFinalizers()
+                | "q"     -> ()
+                | "test1" -> ``Test function logging stack frame depth`` ()
+                | _       -> syslog.info str
 
     let setupLogging _ =
         let mutable conf = LoggerConfiguration ()
@@ -91,13 +85,13 @@ module Program =
             "{Message:lj}. {NewLine}{Exception}"
         )
         Log.Logger <- conf.CreateLogger ()
+        Mochi.Core.GCMonitor.start ()
         ()
 
     [<EntryPoint>]
     let main _ =
         setupLogging ()
-        mytest2 ()
-        // Console.ReadLine () |> ignore
+        commandReader ()
         0
 
 
