@@ -44,17 +44,25 @@ module Logging =
         static member Create (scope, msg, excp) =
             let stack = StackFrame (scope + 1, true)
             let sl = StructuredLog ()
-            if (stack.GetMethod ()).Name = "Invoke" then
-                // Caller is a lambda, we have to treat this special
-                let ns = ((stack.GetMethod ()).ReflectedType).FullName.Split '+'
-                let fn = (ns.[1]).Split '@'
-                // if we ever want to get the line number the lambda is defined on, since it contains that in it's name:
-                // sl.CallerName       <- String.Format("{0} (Line {1})", fn.[0], ((fn.[1]).Substring(0, (fn.[1].Length - 1))))
-                sl.CallerName       <- fn.[0]
-                sl.CallerNamespace  <- ns.[0]
+            if isNull (stack.GetMethod ()) then
+                sl.CallerName       <- "NOCALL"
+                sl.CallerNamespace  <- "NOCALL"
             else
-                sl.CallerName       <- (stack.GetMethod ()).Name
-                sl.CallerNamespace  <- ((stack.GetMethod ()).ReflectedType).FullName
+                if (stack.GetMethod ()).Name = "Invoke" then
+                    // Caller is a lambda, we have to treat this special
+                    let ns = ((stack.GetMethod ()).ReflectedType).FullName.Split '+'
+                    let fn = (ns.[1]).Split '@'
+                    // if we ever want to get the line number the lambda is defined on, since it contains that in it's name:
+                    // sl.CallerName       <- String.Format("{0} (Line {1})", fn.[0], ((fn.[1]).Substring(0, (fn.[1].Length - 1))))
+                    sl.CallerName       <- fn.[0]
+                    sl.CallerNamespace  <- ns.[0]
+                else if ((stack.GetMethod ()).ReflectedType).FullName.Contains("+") then
+                    let ns = ((stack.GetMethod ()).ReflectedType).FullName.Split '+'
+                    sl.CallerName       <- (stack.GetMethod ()).Name
+                    sl.CallerNamespace  <- ns.[0]
+                else
+                    sl.CallerName       <- (stack.GetMethod ()).Name
+                    sl.CallerNamespace  <- ((stack.GetMethod ()).ReflectedType).FullName
             sl.CallerFile       <- Path.GetFileName (stack.GetFileName ())
             sl.CallerDirectory  <- Path.GetDirectoryName (stack.GetFileName ())
             sl.CallerLineNumber <- (stack.GetFileLineNumber ())
