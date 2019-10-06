@@ -83,10 +83,10 @@ module Logging =
             logger.Information (msg)
             ()
 
-        static member LogInfo (scope, msg, excp) =
+        static member LogInfo (scope, excp, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
-            logger.Information (msg)
+            logger.Information (excp, msg)
             ()
         
         static member LogWarning (scope, msg) =
@@ -95,10 +95,10 @@ module Logging =
             logger.Warning (msg)
             ()
 
-        static member LogWarning (scope, msg, excp) =
+        static member LogWarning (scope, excp, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
-            logger.Warning (msg)
+            logger.Warning (excp, msg)
             ()
             
         static member LogError (scope, msg) =
@@ -107,10 +107,10 @@ module Logging =
             logger.Error (msg)
             ()
 
-        static member LogError (scope, msg, excp) =
+        static member LogError (scope, excp, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
-            logger.Error (msg)
+            logger.Error (excp, msg)
             ()
             
         static member LogFatal (scope, msg) =
@@ -119,10 +119,10 @@ module Logging =
             logger.Fatal (msg)
             ()
 
-        static member LogFatal (scope, msg, excp) =
+        static member LogFatal (scope, excp, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
-            logger.Fatal (msg)
+            logger.Fatal (excp, msg)
             ()
         
         [<Conditional("DEBUG")>]
@@ -133,10 +133,10 @@ module Logging =
             ()
 
         [<Conditional("DEBUG")>]
-        static member LogDebug (scope, msg, excp) =
+        static member LogDebug (scope, excp, msg) =
             let sl = StructuredLog.Create (scope + 1, msg, excp)
             let logger = StructuredLog.FormContext (sl)
-            logger.Debug (msg)
+            logger.Debug (excp, msg)
             ()
 
         member this.ToJson (options : JsonSerializerOptions) =
@@ -185,20 +185,20 @@ module Logging =
     let logDebug1 (scope : int) (msg : string) =
         StructuredLog.LogDebug (scope + 1, msg)
 
-    let logInfo2 (scope : int) (msg : string) (excp : Exception) =
-        StructuredLog.LogInfo (scope + 1, msg, excp)
+    let logInfo2 (scope : int) (excp : Exception) (msg : string) =
+        StructuredLog.LogInfo (scope + 1, excp, msg)
     
-    let logWarning2 (scope : int) (msg : string) (excp : Exception) =
-        StructuredLog.LogWarning (scope + 1, msg, excp)
+    let logWarning2 (scope : int) (excp : Exception) (msg : string) =
+        StructuredLog.LogWarning (scope + 1, excp, msg)
     
-    let logError2 (scope : int) (msg : string) (excp : Exception) =
-        StructuredLog.LogError (scope + 1, msg, excp)
+    let logError2 (scope : int) (excp : Exception) (msg : string) =
+        StructuredLog.LogError (scope + 1, excp, msg)
         
-    let logFatal2 (scope : int) (msg : string) (excp : Exception) =
-        StructuredLog.LogFatal (scope + 1, msg, excp)
+    let logFatal2 (scope : int) (excp : Exception) (msg : string) =
+        StructuredLog.LogFatal (scope + 1, excp, msg)
     
-    let logDebug2 (scope : int) (msg : string) (excp : Exception) =
-        StructuredLog.LogDebug (scope + 1, msg, excp)
+    let logDebug2 (scope : int) (excp : Exception) (msg : string) =
+        StructuredLog.LogDebug (scope + 1, excp, msg)
     
     type Logger = {
         info     : string -> unit
@@ -206,11 +206,11 @@ module Logging =
         error    : string -> unit
         fatal    : string -> unit
         debug    : string -> unit
-        info2    : string -> Exception -> unit
-        warning2 : string -> Exception -> unit
-        error2   : string -> Exception -> unit
-        fatal2   : string -> Exception -> unit
-        debug2   : string -> Exception -> unit
+        info2    : Exception -> string -> unit
+        warning2 : Exception -> string -> unit
+        error2   : Exception -> string -> unit
+        fatal2   : Exception -> string -> unit
+        debug2   : Exception -> string -> unit
     }
     
     let syslog = {
