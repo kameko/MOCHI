@@ -105,9 +105,11 @@ module Logging =
             let mutable logger : ILogger = Log.Logger
             logger <- logger.ForContext ("CallerName"       , sl.CallerName)
             logger <- logger.ForContext ("CallerNamespace"  , sl.CallerNamespace)
+            logger <- logger.ForContext ("CallerFullName"   , sprintf "%s.%s" sl.CallerNamespace sl.CallerName)
             logger <- logger.ForContext ("CallerFile"       , sl.CallerFile)
             logger <- logger.ForContext ("CallerDirectory"  , sl.CallerDirectory)
             logger <- logger.ForContext ("CallerLineNumber" , sl.CallerLineNumber)
+            logger <- logger.ForContext ("CallerFileNumber" , sprintf "%s:%i" sl.CallerFile sl.CallerLineNumber)
             logger
 
         static member LogInfo (scope, msg) =

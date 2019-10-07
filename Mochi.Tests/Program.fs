@@ -104,9 +104,11 @@ module Program =
         let aref = spawn system "master" (fun mailbox ->
             let rec kurikaesu () = actor {
                 let! (message : obj) = mailbox.Receive()
-                let logger = akkalogger mailbox
-                logger.Info <| sprintf "Got message: %O" message
-                return! kurikaesu ()
+                match message with
+                | _ -> 
+                    //logger.Info <| sprintf "Got message: %O" message
+                    akkalog.info mailbox <| sprintf "Got message: %O" message
+                    return! kurikaesu ()
             }
             kurikaesu ())
         aref
@@ -116,11 +118,10 @@ module Program =
         conf <- conf.MinimumLevel.Debug() //.MinimumLevel.ControlledBy(levelSwitch)
         conf <- conf.WriteTo.Console (outputTemplate = 
             "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
-            "[{CallerNamespace}.{CallerName} ({CallerFile}:{CallerLineNumber})]: " + 
+            "[{CallerFullName}({CallerFileNumber})]{ActorPath}: " + 
             "{Message:lj}. {NewLine}{Exception}"
         )
-        //conf <- conf.Enrich.WithProperty("CallerNamespace", "Unknown")
-        conf <- conf.Enrich.WithProperty("CallerName", "Unknown")
+        conf <- conf.Enrich.WithProperty("CallerFullName", "No Source")
         Log.Logger <- conf.CreateLogger ()
         ()
 
@@ -146,6 +147,8 @@ module Program =
         let system = System.create "mochi" config
         let master = masterActor system
         master <! "yo wassap"
+        master <! "hey"
+        master <! "hey2"
         system
 
     [<MethodImpl(MethodImplOptions.NoInlining)>]
