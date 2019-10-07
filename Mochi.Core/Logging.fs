@@ -101,7 +101,7 @@ module Logging =
         static member Create (scope, excp) =
             StructuredLog.Create (scope + 1, null, excp)
         
-        static member private FormContext (sl : StructuredLog) =
+        static member FormContext (sl : StructuredLog) =
             let mutable logger : ILogger = Log.Logger
             logger <- logger.ForContext ("CallerName"       , sl.CallerName)
             logger <- logger.ForContext ("CallerNamespace"  , sl.CallerNamespace)
@@ -213,21 +213,42 @@ module Logging =
         [<MethodImpl(MethodImplOptions.NoInlining)>]
         static member info msg =
             StructuredLog.LogInfo (1, msg)
+            
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member infoe excp msg =
+            StructuredLog.LogInfo (1, excp, msg)
 
         [<MethodImpl(MethodImplOptions.NoInlining)>]
         static member warning msg =
             StructuredLog.LogWarning (1, msg)
 
         [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member warninge excp msg =
+            StructuredLog.LogWarning (1, excp, msg)
+
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
         static member error msg =
             StructuredLog.LogError (1, msg)
+
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member errore excp msg =
+            StructuredLog.LogError (1, excp, msg)
 
         [<MethodImpl(MethodImplOptions.NoInlining)>]
         static member fatal msg =
             StructuredLog.LogFatal (1, msg)
 
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member fatale excp msg =
+            StructuredLog.LogFatal (1, excp, msg)
+
         [<Conditional("DEBUG")>]
         [<MethodImpl(MethodImplOptions.NoInlining)>]
         static member debug msg =
             StructuredLog.LogDebug (1, msg)
+
+        [<Conditional("DEBUG")>]
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member debuge excp msg =
+            StructuredLog.LogDebug (1, excp, msg)
     
