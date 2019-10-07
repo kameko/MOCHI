@@ -13,7 +13,7 @@ module AkkaLogging =
     open Serilog
     open Logging
 
-    let makeContext (sl : StructuredLog) (la : ILoggingAdapter) =
+    let makeAkkaLogContext (sl : StructuredLog) (mailbox : Actor<'Message>) (la : ILoggingAdapter) =
         let mutable logger = la
         logger <- logger.ForContext ("CallerName"       , sl.CallerName)
         logger <- logger.ForContext ("CallerNamespace"  , sl.CallerNamespace)
@@ -22,29 +22,31 @@ module AkkaLogging =
         logger <- logger.ForContext ("CallerDirectory"  , sl.CallerDirectory)
         logger <- logger.ForContext ("CallerLineNumber" , sl.CallerLineNumber)
         logger <- logger.ForContext ("CallerFileNumber" , sprintf "%s:%i" sl.CallerFile sl.CallerLineNumber)
+        logger <- logger.ForContext ("ActorPath"        , sprintf "[%O]" mailbox.Self.Path)
+        logger <- logger.ForContext ("ActorName"        , mailbox.Self.Path.Name)
         logger
 
-    let makeMailboxContext (sl : StructuredLog) (mailbox : Actor<'Message>) =
-        let mutable logger = StructuredLog.FormContext sl
-        logger <- logger.ForContext ("ActorPath" , sprintf "[%O]" mailbox.Self.Path)
-        logger <- logger.ForContext ("ActorName" , mailbox.Self.Path.Name)
-        logger
-
-    let akkalogger (mailbox : Actor<'Message>) =
+    let getakkalogger (mailbox : Actor<'Message>) =
         let sl = StructuredLog.Create (1, String.Empty)
-        makeContext sl <| mailbox.Context.GetLogger ()
+        makeAkkaLogContext sl mailbox <| mailbox.Context.GetLogger ()
 
-    let akkaloggerm (mailbox : Actor<'Message>) (msg : string) =
+    let getakkaloggerm (mailbox : Actor<'Message>) (msg : string) =
         let sl = StructuredLog.Create (1, msg)
-        makeContext sl <| mailbox.Context.GetLogger ()
+        makeAkkaLogContext sl mailbox <| mailbox.Context.GetLogger ()
 
-    let akkaloggerem (mailbox : Actor<'Message>) (excp : Exception) (msg : string) =
+    let getakkaloggerem (mailbox : Actor<'Message>) (excp : Exception) (msg : string) =
         let sl = StructuredLog.Create (1, msg, excp)
-        makeContext sl <| mailbox.Context.GetLogger ()
-        
+        makeAkkaLogContext sl mailbox <| mailbox.Context.GetLogger ()
+      
     type akkalog () =
+        static member private makeMailboxContext (sl : StructuredLog) (mailbox : Actor<'Message>) =
+            let mutable logger = StructuredLog.FormContext sl
+            logger <- logger.ForContext ("ActorPath" , sprintf "[%O]" mailbox.Self.Path)
+            logger <- logger.ForContext ("ActorName" , mailbox.Self.Path.Name)
+            logger
+
         static member private context (mailbox : Actor<'Message>) (msg : string) =
-            makeMailboxContext (StructuredLog.Create ((if isRelease () then 1 else 2), msg)) mailbox
+            akkalog.makeMailboxContext (StructuredLog.Create ((if isRelease () then 1 else 2), msg)) mailbox
 
         [<MethodImpl(MethodImplOptions.NoInlining)>]
         static member info (mailbox : Actor<'Message>) (msg : string) =
