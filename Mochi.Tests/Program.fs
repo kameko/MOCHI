@@ -50,9 +50,8 @@ module Program =
     let commandReader _ =
         let mutable run = true
         let mutable str = String.Empty
-        Console.WriteLine "Lets do it"
         while run do
-            Console.Write "> "
+            Console.Write "CMD> "
             str <- Console.ReadLine ()
             if str = "q" then
                 run <- false
@@ -81,11 +80,12 @@ module Program =
         conf <- conf.WriteTo.Console (outputTemplate = 
             "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
             "[{CallerNamespace}.{CallerName} ({CallerFile}:{CallerLineNumber})]: " + 
-            //"{NewLine} --> " +
             "{Message:lj}. {NewLine}{Exception}"
         )
         Log.Logger <- conf.CreateLogger ()
         Mochi.Core.GCMonitor.start ()
+        syslog.info "MOCHI Test Environment"
+        syslog.info <| sprintf "Running in %s mode" (Mochi.Core.GCMonitor.releaseString ())
         ()
 
     [<EntryPoint>]
