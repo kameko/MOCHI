@@ -4,18 +4,15 @@ namespace Mochi.Tests
 module Program = 
     
     open System
+    open System.Runtime.CompilerServices
     open Serilog
     open Mochi.Core.Logging
     
     let ``Test function logging stack frame depth`` _ =
-        let depth = 0
-        logInfo1 depth "logInfo top level"
         syslog.info "syslog.info top level"
         let innerFunc _ =
-            logInfo1 depth "logInfo inner 1"
             syslog.info "syslog.info inner 1"
             let innerFunc2 _ =
-                logInfo1 depth "logInfo inner 2"
                 syslog.warning "syslog.warning inner 2"
                 ()
             innerFunc2 ()
@@ -84,13 +81,19 @@ module Program =
         )
         Log.Logger <- conf.CreateLogger ()
         Mochi.Core.GCMonitor.start ()
+        ()
+
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let prelude_pathos _ =
+        setupLogging ()
+        //logInfo1 (if isRelease () then 0 else 1) "MOCHI Test Environment"
         syslog.info "MOCHI Test Environment"
-        syslog.info <| sprintf "Running in %s mode" (Mochi.Core.GCMonitor.releaseString ())
+        syslog.info <| sprintf "Running in %s mode" (releaseString ())
         ()
 
     [<EntryPoint>]
     let main _ =
-        setupLogging ()
+        prelude_pathos ()
         commandReader ()
         0
 

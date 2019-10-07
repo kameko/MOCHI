@@ -6,6 +6,8 @@ module Logging =
     open System
     open System.IO
     open System.Diagnostics
+    open System.Reflection
+    open System.Runtime.CompilerServices
     open System.Text.Json
     open System.Text.Json.Serialization
     open Serilog
@@ -18,7 +20,12 @@ module Logging =
         let mutable _callerLineNumber : int = 0
         let mutable _logMessage       : string = String.Empty
         let mutable _exception        : Exception = null
+
+        static let mutable _isRelease : bool = true
         
+        do
+            _isRelease <- StructuredLog.IsReleaseMode ()
+
         member this.CallerName
             with get ()    = _callerName
             and  set value = _callerName <- value
@@ -41,6 +48,24 @@ module Logging =
             with get ()    = _logMessage
             and  set value = _logMessage <- value
         
+        [<JsonIgnore>]
+        static member public IsRelease
+            with get ()    = _isRelease
+
+        static member public IsReleaseMode _ =
+            let asm = Assembly.GetEntryAssembly ()
+            let atrbs = asm.GetCustomAttributes(typeof<DebuggableAttribute>, true)
+            if (isNull atrbs) || atrbs.Length = 0 then
+                true
+            else if atrbs.[0] :? DebuggableAttribute then
+                let dbgatr = atrbs.[0] :?> DebuggableAttribute
+                if dbgatr.IsJITOptimizerDisabled then
+                    false
+                else
+                    true
+            else
+                true
+
         static member Create (scope, msg, excp) =
             let stack = StackFrame (scope + 1, true)
             let sl = StructuredLog ()
@@ -178,59 +203,31 @@ module Logging =
                     this.Exception
                 )
     
-    let logInfo1 (scope : int) (msg : string) =
-        StructuredLog.LogInfo (scope + 1, msg)
-    
-    let logWarning1 (scope : int) (msg : string) =
-        StructuredLog.LogWarning (scope + 1, msg)
-    
-    let logError1 (scope : int) (msg : string) =
-        StructuredLog.LogError (scope + 1, msg)
-        
-    let logFatal1 (scope : int) (msg : string) =
-        StructuredLog.LogFatal (scope + 1, msg)
-        
-    let logDebug1 (scope : int) (msg : string) =
-        StructuredLog.LogDebug (scope + 1, msg)
+    let isRelease _ =
+        StructuredLog.IsRelease
 
-    let logInfo2 (scope : int) (excp : Exception) (msg : string) =
-        StructuredLog.LogInfo (scope + 1, excp, msg)
+    let releaseString _ =
+        if StructuredLog.IsRelease then "RELEASE" else "DEBUG"
     
-    let logWarning2 (scope : int) (excp : Exception) (msg : string) =
-        StructuredLog.LogWarning (scope + 1, excp, msg)
-    
-    let logError2 (scope : int) (excp : Exception) (msg : string) =
-        StructuredLog.LogError (scope + 1, excp, msg)
-        
-    let logFatal2 (scope : int) (excp : Exception) (msg : string) =
-        StructuredLog.LogFatal (scope + 1, excp, msg)
-    
-    let logDebug2 (scope : int) (excp : Exception) (msg : string) =
-        StructuredLog.LogDebug (scope + 1, excp, msg)
-    
-    type Logger = {
-        info     : string -> unit
-        warning  : string -> unit
-        error    : string -> unit
-        fatal    : string -> unit
-        debug    : string -> unit
-        info2    : Exception -> string -> unit
-        warning2 : Exception -> string -> unit
-        error2   : Exception -> string -> unit
-        fatal2   : Exception -> string -> unit
-        debug2   : Exception -> string -> unit
-    }
-    
-    let syslog = {
-        info     = logInfo1    1
-        warning  = logWarning1 1
-        error    = logError1   1
-        fatal    = logFatal1   1
-        debug    = logDebug1   1
-        info2    = logInfo2    1
-        warning2 = logWarning2 1
-        error2   = logError2   1
-        fatal2   = logFatal2   1
-        debug2   = logDebug2   1
-    }
+    type syslog () =
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member info msg =
+            StructuredLog.LogInfo (1, msg)
+
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member warning msg =
+            StructuredLog.LogWarning (1, msg)
+
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member error msg =
+            StructuredLog.LogError (1, msg)
+
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member fatal msg =
+            StructuredLog.LogFatal (1, msg)
+
+        [<Conditional("DEBUG")>]
+        [<MethodImpl(MethodImplOptions.NoInlining)>]
+        static member debug msg =
+            StructuredLog.LogDebug (1, msg)
     
