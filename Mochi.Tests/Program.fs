@@ -84,16 +84,15 @@ module Program =
         ()
 
     [<MethodImpl(MethodImplOptions.NoInlining)>]
-    let prelude_pathos _ =
+    let ``prelude pathos`` _ =
         setupLogging ()
-        //logInfo1 (if isRelease () then 0 else 1) "MOCHI Test Environment"
         syslog.info "MOCHI Test Environment"
         syslog.info <| sprintf "Running in %s mode" (releaseString ())
         ()
 
     [<EntryPoint>]
     let main _ =
-        prelude_pathos ()
+        ``prelude pathos`` ()
         commandReader ()
         0
 
