@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Logging.fs" />
+    <Compile Include="AkkaLogging.fs" />
     <Compile Include="GCMonitor.fs" />
     <Compile Include="Plugins/Plugins.fs" />
     <Compile Include="Plugins/PluginLoader.fs" />
