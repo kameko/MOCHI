@@ -8,6 +8,7 @@ module PluginLoader =
     open System.Reflection
     open System.Runtime.Loader
     open System.Runtime.CompilerServices
+    open System.Runtime.InteropServices
     open Plugins
     open Logging
     
@@ -19,7 +20,7 @@ module PluginLoader =
         | FileLoad       of FileLoadException
         | Other          of Exception
     
-    type private PluginLoadContext (loadPath: String) =
+    type PluginLoadContext (loadPath: String) =
         inherit AssemblyLoadContext (true)
         
         let resolver = AssemblyDependencyResolver(loadPath)
@@ -39,35 +40,41 @@ module PluginLoader =
                 else
                     Ok asm
             with
-                | :? BadImageFormatException as ex -> Error <| BadImageFormat ex
-                | :? NullReferenceException  as ex -> Error <| AssemblyNull ex
-                | :? FileNotFoundException   as ex -> Error <| FileNotFound ex
-                | :? ArgumentException       as ex -> Error <| Argument ex
-                | :? FileLoadException       as ex -> Error <| FileLoad ex
-                |                               ex -> Error <| Other ex
+            | :? BadImageFormatException as ex -> Error <| BadImageFormat ex
+            | :? NullReferenceException  as ex -> Error <| AssemblyNull ex
+            | :? FileNotFoundException   as ex -> Error <| FileNotFound ex
+            | :? ArgumentException       as ex -> Error <| Argument ex
+            | :? FileLoadException       as ex -> Error <| FileLoad ex
+            |                               ex -> Error <| Other ex
     
     type AssemblyReference = {
-        weakRef : WeakReference
-        isAlive : unit -> bool
+        weakRef     : WeakReference<PluginLoadContext>
+        getRef      : unit -> Option<PluginLoadContext>
+        isAlive     : unit -> bool
     }
     
-    type PluginContext = {
-        assembly   : Assembly
-        asmref     : AssemblyReference
-        unload     : unit -> unit
+    type AssemblyContext = {
+        assembly    : Assembly
+        asmref      : AssemblyReference
+        unload      : unit -> unit
     }
     
     [<MethodImpl(MethodImplOptions.NoInlining)>] // make sure we don't keep the plugin reference around elsewhere
     let loadAssemblyName (assemblyPath : String) (assemblyName: AssemblyName) =
         let asmldr = PluginLoadContext (assemblyPath)
-        let wref   = WeakReference(asmldr)
+        let wref   = WeakReference<PluginLoadContext>(asmldr)
         let masm   = asmldr.LoadAssembly(assemblyName)
         match masm with
         | Ok asm -> Ok {
                 assembly = asm
                 asmref   = {
                     weakRef = wref
-                    isAlive = fun () -> wref.IsAlive
+                    getRef  = fun () ->
+                        let mutable target : PluginLoadContext = Unchecked.defaultof<PluginLoadContext>
+                        if wref.TryGetTarget(&target) then Some target else None
+                    isAlive = fun () -> 
+                        let mutable target : PluginLoadContext = Unchecked.defaultof<PluginLoadContext>
+                        wref.TryGetTarget(&target)
                 }
                 unload   = fun () -> asmldr.Unload ()
             }
@@ -83,7 +90,7 @@ module PluginLoader =
         let asmname     = AssemblyName (Path.GetFileNameWithoutExtension relativePath)
         loadAssemblyName fullPath asmname
     
-    let unloadAssembly (asmcontext : PluginContext) =
+    let unloadAssembly (asmcontext : AssemblyContext) =
         asmcontext.unload ()
     
     let ensureUnload (asmref : AssemblyReference) =
@@ -103,6 +110,6 @@ module PluginLoader =
         let r1 = not (List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies)
         r1
 
-    let getPluginFromAssembly () =
+    let getPluginFromAssembly (context : AssemblyContext) =
         ()
     
