@@ -51,7 +51,7 @@ module Program =
     let ``Test actor message passing`` _ =
         ()
 
-    let commandReader _ =
+    let commandReader (system : ActorSystem) (master : IActorRef) =
         let mutable run = true
         let mutable str = String.Empty
         while run do
@@ -70,6 +70,7 @@ module Program =
                 | "fatal" | "critical"  -> syslog.fatal nstr
                 | "debug"               -> syslog.debug nstr
                 | "console"             -> Console.WriteLine nstr
+                | "master"              -> master <! nstr
                 | "rawlog"              -> Log.Information nstr
                 | _                     -> syslog.info str
             else if not (String.IsNullOrEmpty(str) || String.IsNullOrWhiteSpace(str)) then
@@ -79,38 +80,16 @@ module Program =
                 | "test1" -> ``Test function logging stack frame depth`` ()
                 | _       -> syslog.info str
     
-    type Message =
-        | Die of string
-        | Msg of IActorRef * string
-
-    let commandActor system =
-        let aref = spawn system "command" (fun mailbox ->
-            let rec kurikaesu () = actor {
-                let! (message : obj) = mailbox.Receive()
-                match message with
-                | :? Message as msg ->
-                    match msg with
-                    | Msg (aref, str) -> 
-                        syslog.info <| sprintf "Got message: %s" str
-                        return! kurikaesu ()
-                    | Die str ->
-                        syslog.info <| sprintf "Shutting down. Reason: %s" str
-                | _ -> return! kurikaesu ()
-            }
-            kurikaesu ())
-        aref
-
-    let masterActor system =
+    let spawnMasterActor system =
         let aref = spawn system "master" (fun mailbox ->
-            let rec kurikaesu () = actor {
+            let rec masterActor () = actor {
                 let! (message : obj) = mailbox.Receive()
                 match message with
                 | _ -> 
-                    //logger.Info <| sprintf "Got message: %O" message
                     akkalog.info mailbox <| sprintf "Got message: %O" message
-                    return! kurikaesu ()
+                    return! masterActor ()
             }
-            kurikaesu ())
+            masterActor ())
         aref
 
     let setupLogging _ =
@@ -118,10 +97,9 @@ module Program =
         conf <- conf.MinimumLevel.Debug() //.MinimumLevel.ControlledBy(levelSwitch)
         conf <- conf.WriteTo.Console (outputTemplate = 
             "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
-            "[{CallerFullName}({CallerFileNumber})]{ActorPath}: " + 
+            "[{CallerFullName}({SourceContext}{CallerFileNumber})]{ActorPath}: " + 
             "{Message:lj}. {NewLine}{Exception}"
         )
-        conf <- conf.Enrich.WithProperty("CallerFullName", "No Source")
         Log.Logger <- conf.CreateLogger ()
         ()
 
@@ -132,7 +110,6 @@ module Program =
                 loglevel=DEBUG, \
                 loggers=[\"Akka.Logger.Serilog.SerilogLogger, Akka.Logger.Serilog\"] \
                 log-config-on-start = on \
-                logtemplate = \"syslog {Message}\" \
                 actor { \
                     debug { \
                         receive = on \
@@ -145,11 +122,11 @@ module Program =
             } \
             "
         let system = System.create "mochi" config
-        let master = masterActor system
+        let master = spawnMasterActor system
         master <! "yo wassap"
         master <! "hey"
         master <! "hey2"
-        system
+        (master, system)
 
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let ``prelude pathos`` _ =
@@ -157,8 +134,8 @@ module Program =
         syslog.info "MOCHI Test Environment"
         syslog.info <| sprintf "Running in %s mode" (releaseString ())
         Mochi.Core.GCMonitor.start ()
-        let system = setupActors ()
-        commandReader ()
+        let (master, system) = setupActors ()
+        commandReader system master
         system.Dispose ()
         ()
 

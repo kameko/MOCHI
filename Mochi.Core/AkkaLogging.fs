@@ -37,7 +37,7 @@ module AkkaLogging =
     let getakkaloggerem (mailbox : Actor<'Message>) (excp : Exception) (msg : string) =
         let sl = StructuredLog.Create (1, msg, excp)
         makeAkkaLogContext sl mailbox <| mailbox.Context.GetLogger ()
-      
+    
     type akkalog () =
         static member private makeMailboxContext (sl : StructuredLog) (mailbox : Actor<'Message>) =
             let mutable logger = StructuredLog.FormContext sl

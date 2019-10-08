@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Core", "Mochi.Core\Mochi.Core.fsproj", "{C8853CD9-29E7-4EF8-B9C1-554C604E8193}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Core", "Mochi.Core\Mochi.Core.fsproj", "{C8853CD9-29E7-4EF8-B9C1-554C604E8193}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Client", "Mochi.Client\Mochi.Client.fsproj", "{C379D453-F9F0-4484-96B4-47AE07711C42}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Client", "Mochi.Client\Mochi.Client.fsproj", "{C379D453-F9F0-4484-96B4-47AE07711C42}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Server", "Mochi.Server\Mochi.Server.fsproj", "{61DA7478-E2F6-4FA1-A630-21C42EE0F1D8}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Server", "Mochi.Server\Mochi.Server.fsproj", "{61DA7478-E2F6-4FA1-A630-21C42EE0F1D8}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Tests", "Mochi.Tests\Mochi.Tests.fsproj", "{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Tests", "Mochi.Tests\Mochi.Tests.fsproj", "{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,9 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C8853CD9-29E7-4EF8-B9C1-554C604E8193}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -72,5 +69,11 @@ Global
 		{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}.Release|x64.Build.0 = Release|Any CPU
 		{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D5BDEB67-1F78-4D85-878F-D44E7C259499}
 	EndGlobalSection
 EndGlobal
