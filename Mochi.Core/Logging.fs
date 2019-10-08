@@ -23,7 +23,7 @@ module Logging =
 
         static let mutable _isRelease : bool = true
         
-        do
+        static do
             _isRelease <- StructuredLog.IsReleaseMode ()
 
         member this.CallerName
