@@ -10,15 +10,6 @@ module Plugins =
     open Akka.Actor
     open Akka.FSharp
     
-    type UnloadReason =
-        | UserUnload
-        | PluginFault
-        | Reloading
-    
-    type ReportReason =
-        | PluginUnloaded of UnloadReason
-        | PluginLoaded
-    
     type PluginInfo = {
         name        : string
         company     : string
@@ -37,6 +28,16 @@ module Plugins =
         version : Version
     }
 
+    type UnloadReason =
+        | UserUnload
+        | SystemUnload
+        | PluginFault
+        | Reloading
+    
+    type ReportReason =
+        | PluginUnloaded of PluginInfo * UnloadReason
+        | PluginLoaded of PluginInfo
+
     type PluginEnvironment = {
         plugins : list<PluginInfo>
     }
@@ -50,7 +51,3 @@ module Plugins =
         onReport         : PluginEnvironment -> ReportReason -> unit // runs after every time a plugin is loaded or unloaded
         onUnload         : UnloadReason -> unit
     }
-    
-    let isValidPlugin (plugin : Plugin) =
-        let r1 = List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies
-        not r1

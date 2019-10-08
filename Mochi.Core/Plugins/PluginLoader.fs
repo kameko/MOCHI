@@ -8,6 +8,7 @@ module PluginLoader =
     open System.Reflection
     open System.Runtime.Loader
     open System.Runtime.CompilerServices
+    open Plugins
     open Logging
     
     type PluginLoadContextError =
@@ -97,6 +98,10 @@ module PluginLoader =
             else
                 kurikaesu aref (count - 1)
         kurikaesu asmref 10
+
+    let isValidPlugin (plugin : Plugin) =
+        let r1 = not (List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies)
+        r1
 
     let getPluginFromAssembly () =
         ()

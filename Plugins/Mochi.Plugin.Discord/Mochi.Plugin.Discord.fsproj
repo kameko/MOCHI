@@ -5,7 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="ChannelActor.fs" />
+    <Compile Include="DiscordPlugin.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akka" Version="1.4.0-beta2" />
+    <PackageReference Include="Akka.FSharp" Version="1.4.0-beta2" />
+    <PackageReference Include="Akka.Remote" Version="1.4.0-beta2" />
+    <PackageReference Include="Discord.Net" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mochi.Core\Mochi.Core.fsproj" />
   </ItemGroup>
 
 </Project>
