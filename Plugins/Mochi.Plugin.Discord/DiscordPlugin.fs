@@ -4,6 +4,7 @@ namespace Mochi.Plugin.Discord
 module DiscordPlugin =
     
     open System
+    open Akka.Actor
     open Mochi.Core.Plugins
 
     let LoadPlugin () = 

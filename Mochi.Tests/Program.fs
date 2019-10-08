@@ -8,7 +8,6 @@ module Program =
     open Akka.Actor
     open Akka.FSharp
     open Serilog
-    open Akka.Logger.Serilog
     open Mochi.Core.Logging
     open Mochi.Core.AkkaLogging
     

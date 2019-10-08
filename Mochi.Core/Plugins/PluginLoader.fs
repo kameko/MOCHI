@@ -97,4 +97,7 @@ module PluginLoader =
             else
                 kurikaesu aref (count - 1)
         kurikaesu asmref 10
+
+    let getPluginFromAssembly () =
+        ()
     
