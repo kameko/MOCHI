@@ -122,7 +122,7 @@ module PluginLoader =
         try
             let asm = context.assembly
             let baseplugintype = Array.find (fun (t : Type) -> 
-                    t.BaseType = typeof<BasePlugin>) (asm.GetExportedTypes ())
+                    t.IsSubclassOf typeof<BasePlugin>) (asm.GetExportedTypes ())
             let baseplugin = Activator.CreateInstance(baseplugintype) :?> BasePlugin
             let plugin = baseplugin.Load ()
             if isValidPlugin plugin then
