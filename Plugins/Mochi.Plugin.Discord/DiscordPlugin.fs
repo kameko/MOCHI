@@ -19,7 +19,7 @@ module DiscordPlugin =
                 author          = "Kameko"
                 copyright       = "Kameko 2019"
                 license         = "MS-PL"
-            };
+            }
             loadDependencies    = []
             execDependencies    = []
             supervisor          = (fun mailbox -> ())

@@ -10,6 +10,8 @@ module Program =
     open Serilog
     open Mochi.Core.Logging
     open Mochi.Core.AkkaLogging
+    open Mochi.Core.PluginLoader
+    open Mochi.Core.Plugins
     
     let ``Test function logging stack frame depth`` _ =
         syslog.info "syslog.info top level"
@@ -135,6 +137,10 @@ module Program =
         syslog.info <| sprintf "Running in %s mode" (releaseString ())
         Mochi.Core.GCMonitor.start ()
         let (master, system) = setupActors ()
+        let plugin = getPlugin ".\\Mochi.Plugin.Discord.dll"
+        match plugin with
+        | Some p -> syslog.info <| sprintf "%A" p
+        | None -> syslog.info "Plugin not loaded"
         commandReader system master
         system.Dispose ()
         ()

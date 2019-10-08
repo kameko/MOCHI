@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Mochi.Core\Mochi.Core.fsproj" />
     <ProjectReference Include="..\Mochi.Client\Mochi.Client.fsproj" />
     <ProjectReference Include="..\Mochi.Server\Mochi.Server.fsproj" />
+    <ProjectReference Include="..\Plugins\Mochi.Plugin.Discord\Mochi.Plugin.Discord.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mochi.Tests.config" />
@@ -18,10 +19,10 @@
     <Compile Include="Tests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00824" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />

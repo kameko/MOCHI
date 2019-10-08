@@ -4,6 +4,7 @@ namespace Mochi.Core
 module PluginLoader =
 
     open System
+    open System.Linq
     open System.IO
     open System.Reflection
     open System.Runtime.Loader
@@ -31,6 +32,13 @@ module PluginLoader =
                 null
             else
                 this.LoadFromAssemblyPath(assemblyPath)
+
+        override this.LoadUnmanagedDll (unmanagedName : string) =
+            let assemblyPath = resolver.ResolveUnmanagedDllToPath(unmanagedName)
+            if isNull assemblyPath then
+                IntPtr.Zero
+            else
+                this.LoadUnmanagedDllFromPath(assemblyPath)
 
         member this.LoadAssembly (assemblyName: AssemblyName) =
             try
@@ -111,5 +119,23 @@ module PluginLoader =
         r1
 
     let getPluginFromAssembly (context : AssemblyContext) =
-        ()
+        try
+            let asm = context.assembly
+            let baseplugintype = Array.find (fun (t : Type) -> 
+                    t.BaseType = typeof<BasePlugin>) (asm.GetExportedTypes ())
+            let baseplugin = Activator.CreateInstance(baseplugintype) :?> BasePlugin
+            let plugin = baseplugin.Load ()
+            if isValidPlugin plugin then
+                Some plugin
+            else
+                None
+        with
+        | _ -> None
     
+    let getPlugin (path : string) =
+        let asm = loadAssembly path
+        match asm with
+        | Ok context ->
+            let plugin = getPluginFromAssembly context
+            plugin
+        | _ -> None
