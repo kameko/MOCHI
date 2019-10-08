@@ -7,7 +7,7 @@ module DiscordPlugin =
     open Akka.Actor
     open Mochi.Core.Plugins
 
-    let LoadPlugin () = 
+    let loadPlugin () = 
         {
             info = {
                 name            = "Discord"
@@ -28,3 +28,8 @@ module DiscordPlugin =
             onUnload            = (fun ur -> ())
         }
     
+    type DiscordPlugin () =
+        inherit BasePlugin ()
+
+        override this.Load () =
+            loadPlugin ()

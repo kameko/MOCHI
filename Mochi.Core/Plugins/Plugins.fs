@@ -51,3 +51,7 @@ module Plugins =
         onReport         : PluginEnvironment -> ReportReason -> unit // runs after every time a plugin is loaded or unloaded
         onUnload         : UnloadReason -> unit
     }
+
+    [<AbstractClass>]
+    type BasePlugin () =
+        abstract member Load : unit -> Plugin

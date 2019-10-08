@@ -94,7 +94,7 @@ module PluginLoader =
         asmcontext.unload ()
     
     let ensureUnload (asmref : AssemblyReference) =
-        let rec kurikaesu (aref : AssemblyReference) count =
+        let rec ensureUnloadKurikaesu (aref : AssemblyReference) count =
             GC.Collect ()
             GC.WaitForPendingFinalizers ()
             if (not <| aref.isAlive ()) then
@@ -103,8 +103,8 @@ module PluginLoader =
                 syslog.warning "Timeout reached while waiting for assembly to unload. Assembly may still be alive."
                 ()
             else
-                kurikaesu aref (count - 1)
-        kurikaesu asmref 10
+                ensureUnloadKurikaesu aref (count - 1)
+        ensureUnloadKurikaesu asmref 10
 
     let isValidPlugin (plugin : Plugin) =
         let r1 = not (List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies)
