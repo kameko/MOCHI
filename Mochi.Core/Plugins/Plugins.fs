@@ -21,6 +21,7 @@ module Plugins =
     
     type PluginInfo = {
         name        : string
+        company     : string
         version     : Version
         guid        : Guid
         description : string
@@ -32,6 +33,7 @@ module Plugins =
     
     type PluginRequirement = {
         name    : string
+        company : string
         version : Version
     }
 
