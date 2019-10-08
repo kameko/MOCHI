@@ -38,9 +38,10 @@ module Plugins =
     }
 
     type PluginEnvironment = {
-        plugins : list<Plugin>
+        plugins : list<PluginInfo>
     }
-    and Plugin = {
+
+    type Plugin = {
         info             : PluginInfo
         loadDependencies : list<PluginRequirement> // plugins that must be loaded before this one can run.
         execDependencies : list<PluginRequirement> // plugins that must be running when this one is.
