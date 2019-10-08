@@ -56,7 +56,7 @@ module PluginLoader =
         unload     : unit -> unit
     }
     
-    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    [<MethodImpl(MethodImplOptions.NoInlining)>] // make sure we don't keep the plugin reference around elsewhere
     let loadAssemblyName (assemblyPath : String) (assemblyName: AssemblyName) =
         let asmldr = PluginLoadContext (assemblyPath)
         let wref   = WeakReference(asmldr)

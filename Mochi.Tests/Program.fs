@@ -101,6 +101,7 @@ module Program =
             "{Message:lj}. {NewLine}{Exception}"
         )
         Log.Logger <- conf.CreateLogger ()
+        Mochi.Core.GCMonitor.GCMonitor.LogMessage <- "Garbage collection occurred"
         ()
 
     let setupActors _ =

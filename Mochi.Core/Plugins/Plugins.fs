@@ -7,6 +7,8 @@ module Plugins =
     open System
     open System.IO
     open System.Threading.Tasks
+    open Akka.Actor
+    open Akka.FSharp
     
     type UnloadReason =
         | UserUnload
@@ -18,6 +20,9 @@ module Plugins =
         | PluginLoaded
     
     type PluginInfo = {
+        name        : string
+        version     : Version
+        guid        : Guid
         description : string
         published   : DateTime
         author      : string
@@ -29,15 +34,13 @@ module Plugins =
         plugins : list<Plugin>
     }
     and Plugin = {
-        name             : string
-        version          : Version
-        guid             : Guid
         info             : PluginInfo
         loadDependencies : list<string> // plugins that must be loaded before this one can run.
         execDependencies : list<string> // plugins that must be running when this one is.
-        onLoad           : PluginEnvironment -> Task // runs once after all dependencies are resolved
-        onReport         : PluginEnvironment -> ReportReason -> Task // runs after every time a plugin is loaded or unloaded
-        onUnload         : UnloadReason -> Task
+        supervisor       : Actor<Object> -> unit
+        onLoad           : PluginEnvironment -> unit // runs once after all dependencies are resolved
+        onReport         : PluginEnvironment -> ReportReason -> unit // runs after every time a plugin is loaded or unloaded
+        onUnload         : UnloadReason -> unit
     }
     
     let isValidPlugin (plugin : Plugin) =
