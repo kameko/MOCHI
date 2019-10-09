@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Mochi.Core\Mochi.Core.fsproj" />
     <ProjectReference Include="..\Mochi.Client\Mochi.Client.fsproj" />
-    <ProjectReference Include="..\Mochi.Plugins\Mochi.Plugins.csproj" />
     <ProjectReference Include="..\Mochi.Server\Mochi.Server.fsproj" />
     <ProjectReference Include="..\Plugins\Mochi.Plugin.Discord\Mochi.Plugin.Discord.fsproj" />
     <ProjectReference Include="..\Plugins\Mochi.TestPlugin1\Mochi.TestPlugin1.csproj" />

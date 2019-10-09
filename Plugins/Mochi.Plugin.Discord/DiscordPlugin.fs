@@ -4,18 +4,6 @@ namespace Mochi.Plugin.Discord
 module DiscordPlugin =
     
     open System
-
-    //(*
-    open Mochi.Plugins
-
-    type DiscordPlugin () =
-        inherit BasePlugin ()
-
-        override this.Load () =
-            ()
-    //*)
-
-    (*
     open Akka.Actor
     open Mochi.Core.Plugins
 
@@ -45,4 +33,3 @@ module DiscordPlugin =
 
         override this.Load () =
             MochiLoadPlugin ()
-    //*)

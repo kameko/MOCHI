@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Mochi.Core\Mochi.Core.fsproj" />
-    <ProjectReference Include="..\..\Mochi.Plugins\Mochi.Plugins.csproj" />
   </ItemGroup>
 
 </Project>
