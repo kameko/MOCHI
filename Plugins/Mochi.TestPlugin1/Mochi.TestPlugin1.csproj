@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Mochi.Core\Mochi.Core.fsproj" />
+    <ProjectReference Include="..\..\Mochi.Plugins\Mochi.Plugins.csproj" />
+  </ItemGroup>
+
+</Project>

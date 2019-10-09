@@ -121,14 +121,39 @@ module PluginLoader =
     let getPluginFromAssembly (context : AssemblyContext) =
         try
             let asm = context.assembly
+            let (exportedtypes : Type[]) = asm.GetExportedTypes ()
+
+            //let bptype = typeof<BasePlugin>
+
+            //let (type1 : Type) = exportedtypes.[1]
+            //let type1is = type1.IsSubclassOf(bptype)
+            // let istype1is2 = type1.BaseType.FullName = bptype.FullName
+
+            //let (type1 : Type) = exportedtypes.[0]
+            //let type1is = type1.GetMethod("MochiLoadPlugin")
+
+            (*
             let baseplugintype = Array.find (fun (t : Type) -> 
-                    t.IsSubclassOf typeof<BasePlugin>) (asm.GetExportedTypes ())
+                    // t.IsSubclassOf typeof<BasePlugin>) (exportedtypes) 
+                    // IsSubclassOf isn't working despite all debug info saying it should. 
+                    // I have to assume this is a runtime bug.
+                    t.BaseType.FullName = bptype.FullName) (exportedtypes)
             let baseplugin = Activator.CreateInstance(baseplugintype) :?> BasePlugin
             let plugin = baseplugin.Load ()
+            *)
+
+            (*
+            let loadplugintype = Array.find (fun (t : Type) ->
+                Array.exists (fun (m : MethodInfo) -> 
+                    m.Name = "MochiLoadPlugin") (t.GetMethods ())) exportedtypes
+            let loadplugin = loadplugintype.GetMethod("MochiLoadPlugin")
+            let plugin = (loadplugin.Invoke(null, Array.empty)) :?> Plugin
             if isValidPlugin plugin then
                 Some plugin
             else
                 None
+            *)
+            None
         with
         | _ -> None
     

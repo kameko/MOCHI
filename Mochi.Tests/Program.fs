@@ -130,6 +130,15 @@ module Program =
         master <! "hey2"
         (master, system)
 
+    [<AbstractClass>]
+    type MyBase () =
+        abstract Do : unit -> unit
+
+    type MyDerived () =
+        inherit MyBase ()
+        override this.Do () =
+            ()
+
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let ``prelude pathos`` _ =
         setupLogging ()
@@ -137,10 +146,15 @@ module Program =
         syslog.info <| sprintf "Running in %s mode" (releaseString ())
         Mochi.Core.GCMonitor.start ()
         let (master, system) = setupActors ()
+        let plugin = Mochi.Plugins.Loader.LoadType<Mochi.Plugins.BasePlugin>(".\\Mochi.Plugin.Discord.dll")
+        //getPlugin ".\\Mochi.Plugin.Discord.dll" |> ignore
+        //getPlugin ".\\Mochi.TestPlugin1.dll" |> ignore
+        (*
         let plugin = getPlugin ".\\Mochi.Plugin.Discord.dll"
         match plugin with
         | Some p -> syslog.info <| sprintf "%A" p
         | None -> syslog.info "Plugin not loaded"
+        *)
         commandReader system master
         system.Dispose ()
         ()
