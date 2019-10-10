@@ -5,7 +5,17 @@ module DiscordPlugin =
     
     open System
     open Akka.Actor
-    open Mochi.Core.Plugins
+
+    open Mochi.Plugins.Types
+
+    type DiscordPlugin () =
+        inherit Plugin ()
+
+        override this.Load () =
+            this.Info.Name <- "Discord"
+
+    (*
+    open Mochi.Plugins.Types.FSharp
 
     let MochiLoadPlugin () = 
         {
@@ -33,3 +43,4 @@ module DiscordPlugin =
 
         override this.Load () =
             MochiLoadPlugin ()
+    *)

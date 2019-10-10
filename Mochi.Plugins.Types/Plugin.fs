@@ -1,9 +1,35 @@
+﻿
+namespace Mochi.Plugins.Types
 
+open System
+open System.Collections.Generic
 
-namespace Mochi.Core
+type PluginInfo () =
+    member val Name         = String.Empty  with get, set
+    member val Company      = String.Empty  with get, set
+    member val Version      = Version()     with get, set
+    member val Guid         = Guid()        with get, set
+    member val Descrption   = String.Empty  with get, set
+    member val Published    = DateTime()    with get, set
+    member val Author       = String.Empty  with get, set
+    member val Copyright    = String.Empty  with get, set
+    member val License      = String.Empty  with get, set
 
-module Plugins =
+type PluginRequirement () =
+    member val Name         = String.Empty  with get, set
+    member val Company      = String.Empty  with get, set
+    member val Version      = Version()     with get, set
 
+[<AbstractClass>]
+type Plugin () =
+    member val Info = PluginInfo() with get, set
+    member val LoadDependencies = List<PluginRequirement>() with get, set
+    member val ExecDependencies = List<PluginRequirement>() with get, set
+
+    abstract Load : unit -> unit
+
+module FSharp =
+    
     open System
     open System.IO
     open System.Threading.Tasks

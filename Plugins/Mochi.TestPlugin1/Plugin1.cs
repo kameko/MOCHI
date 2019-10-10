@@ -3,6 +3,17 @@ using System;
 
 namespace Mochi.TestPlugin1
 {
+    using System.Collections.Generic;
+    using Mochi.Plugins.Types;
+
+    public class Plugin1 : Plugin
+    {
+        public override void Load()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     // FIXME: creating a plugin from C# is absolutely impossible.
     /*
     using System.Collections.Generic;

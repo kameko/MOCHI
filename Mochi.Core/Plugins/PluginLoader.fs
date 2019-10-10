@@ -4,13 +4,14 @@ namespace Mochi.Core
 module PluginLoader =
 
     open System
+    open System.Collections.Generic
     open System.Linq
     open System.IO
     open System.Reflection
     open System.Runtime.Loader
     open System.Runtime.CompilerServices
     open System.Runtime.InteropServices
-    open Plugins
+    open Mochi.Plugins.Types
     open Logging
     
     type PluginLoadContextError =
@@ -115,7 +116,7 @@ module PluginLoader =
         ensureUnloadKurikaesu asmref 10
 
     let isValidPlugin (plugin : Plugin) =
-        let r1 = not (List.exists (fun i -> List.contains i plugin.execDependencies) plugin.loadDependencies)
+        let r1 = not (plugin.LoadDependencies.Exists(fun x -> plugin.ExecDependencies.Exists(fun y -> x = y)))
         r1
 
     let getPluginFromAssembly (context : AssemblyContext) =
@@ -123,9 +124,9 @@ module PluginLoader =
             let asm = context.assembly
             let (exportedtypes : Type[]) = asm.GetExportedTypes ()
             let baseplugintype = Array.find (fun (t : Type) -> 
-                    t.IsSubclassOf typeof<BasePlugin>) (exportedtypes) 
-            let baseplugin = Activator.CreateInstance(baseplugintype) :?> BasePlugin
-            let plugin = baseplugin.Load ()
+                    t.IsSubclassOf typeof<Plugin>) (exportedtypes) 
+            let plugin = Activator.CreateInstance(baseplugintype) :?> Plugin
+            plugin.Load ()
             if isValidPlugin plugin then
                 Some plugin
             else
