@@ -146,6 +146,12 @@ module Program =
         syslog.info <| sprintf "Running in %s mode" (releaseString ())
         Mochi.Core.GCMonitor.start ()
         let (master, system) = setupActors ()
+        let discord = Mochi.Plugin.Discord.DiscordPlugin()
+        discord.PreLoad()
+        let dai = (discord.LoadSupervisor()).Props
+        let pa = system.ActorOf(dai, (sprintf "%sActor" discord.Info.Name))
+        pa <! "Hey!"
+        (*
         let plugin = getPlugin ".\\..\\..\\..\\..\\Plugins\\Mochi.Plugin.Discord\\bin\\Debug\\netcoreapp3.0\\Mochi.Plugin.Discord.dll"
         match plugin with
         | Ok p -> 
@@ -156,6 +162,7 @@ module Program =
         | Error e -> 
             syslog.info <| sprintf "Plugin not loaded: %A" e
             ()
+        *)
         commandReader system master
         system.Dispose ()
         ()
