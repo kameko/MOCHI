@@ -17,7 +17,9 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Plugin.Discord", "Plu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mochi.TestPlugin1", "Plugins\Mochi.TestPlugin1\Mochi.TestPlugin1.csproj", "{9D3A433A-5A41-425A-B0D8-4DAE897A9515}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Plugins.Types", "Mochi.Plugins.Types\Mochi.Plugins.Types.fsproj", "{61CD3F60-1129-4AAC-B9D5-ACA17801D7E4}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Plugins.Types", "Mochi.Plugins.Types\Mochi.Plugins.Types.fsproj", "{61CD3F60-1129-4AAC-B9D5-ACA17801D7E4}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mochi.Tests.Plugins", "Mochi.Tests.Plugins\Mochi.Tests.Plugins.fsproj", "{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,18 @@ Global
 		{61CD3F60-1129-4AAC-B9D5-ACA17801D7E4}.Release|x64.Build.0 = Release|Any CPU
 		{61CD3F60-1129-4AAC-B9D5-ACA17801D7E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{61CD3F60-1129-4AAC-B9D5-ACA17801D7E4}.Release|x86.Build.0 = Release|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Debug|x64.Build.0 = Debug|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Debug|x86.Build.0 = Debug|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Release|x64.ActiveCfg = Release|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Release|x64.Build.0 = Release|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Release|x86.ActiveCfg = Release|Any CPU
+		{FA8060C0-5A84-40DE-BD67-6D5C49D8C947}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
