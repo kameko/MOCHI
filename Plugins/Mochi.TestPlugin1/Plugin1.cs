@@ -5,10 +5,16 @@ namespace Mochi.TestPlugin1
 {
     using System.Collections.Generic;
     using Mochi.Plugins.Types;
+    using Akka.Actor;
 
     public class Plugin1 : Plugin
     {
         public override void PreLoad()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ActorInfo LoadSupervisor()
         {
             throw new NotImplementedException();
         }

@@ -5,42 +5,23 @@ module DiscordPlugin =
     
     open System
     open Akka.Actor
-
     open Mochi.Plugins.Types
 
     type DiscordPlugin () =
         inherit Plugin ()
 
         override this.PreLoad () =
-            this.Info.Name <- "Discord"
+            this.Info.Name       <- "Discord"
+            this.Info.Company    <- "Caesura Software Solutions"
+            this.Info.Version    <- Version(1, 0, 0, 0)
+            this.Info.Guid       <- Guid("8f67899c-a141-4b11-b237-d9993cdbb3e5")
+            this.Info.Descrption <- "Discord chat plugin"
+            this.Info.Published  <- DateTime(2019, 10, 10)
+            this.Info.Author     <- "Kameko"
+            this.Info.Copyright  <- "Kameko 2019"
+            this.Info.License    <- "MS-PL"
 
-    (*
-    open Mochi.Plugins.Types.FSharp
+        override this.LoadSupervisor () =
+            let prop = Props.Create()
+            ActorInfo(prop)
 
-    let MochiLoadPlugin () = 
-        {
-            info = {
-                name            = "Discord"
-                company         = "Caesura Software Solutions"
-                version         = Version(1, 0, 0, 0)
-                guid            = Guid("8f67899c-a141-4b11-b237-d9993cdbb3e5")
-                description     = "Discord chat plugin"
-                published       = DateTime(2019, 10, 7)
-                author          = "Kameko"
-                copyright       = "Kameko 2019"
-                license         = "MS-PL"
-            }
-            loadDependencies    = []
-            execDependencies    = []
-            supervisor          = (fun mailbox -> ())
-            onLoad              = (fun pe -> ())
-            onReport            = (fun pe rr -> ())
-            onUnload            = (fun ur -> ())
-        }
-    
-    type DiscordPlugin () =
-        inherit BasePlugin ()
-
-        override this.Load () =
-            MochiLoadPlugin ()
-    *)

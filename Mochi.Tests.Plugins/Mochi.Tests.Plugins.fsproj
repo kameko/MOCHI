@@ -19,4 +19,10 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Mochi.Plugins.Types\Mochi.Plugins.Types.fsproj" />
+    <ProjectReference Include="..\Plugins\Mochi.Plugin.Discord\Mochi.Plugin.Discord.fsproj" />
+    <ProjectReference Include="..\Plugins\Mochi.TestPlugin1\Mochi.TestPlugin1.csproj" />
+  </ItemGroup>
+
 </Project>

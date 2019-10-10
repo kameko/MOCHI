@@ -148,7 +148,7 @@ module Program =
         let (master, system) = setupActors ()
         let plugin = getPlugin ".\\..\\..\\..\\..\\Plugins\\Mochi.Plugin.Discord\\bin\\Debug\\netcoreapp3.0\\Mochi.Plugin.Discord.dll"
         match plugin with
-        | Ok p -> syslog.info p.Info.Name
+        | Ok p -> syslog.info <| sprintf "Plugin loaded: %s" p.Info.Name
         | Error e -> syslog.info <| sprintf "Plugin not loaded: %A" e
         commandReader system master
         system.Dispose ()

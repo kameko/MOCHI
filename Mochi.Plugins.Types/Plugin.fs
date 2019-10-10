@@ -3,6 +3,7 @@ namespace Mochi.Plugins.Types
 
 open System
 open System.Collections.Generic
+open Akka.Actor
 
 type PluginInfo () =
     member val Name         = String.Empty  with get, set
@@ -20,6 +21,9 @@ type PluginRequirement () =
     member val Company      = String.Empty  with get, set
     member val Version      = Version()     with get, set
 
+type ActorInfo (prop : Props) =
+    member val Props = prop with get, set
+
 [<AbstractClass>]
 type Plugin () =
     member val Info = PluginInfo() with get, set
@@ -27,33 +31,10 @@ type Plugin () =
     member val ExecDependencies = List<PluginRequirement>() with get, set
 
     abstract PreLoad : unit -> unit
+    abstract LoadSupervisor : unit -> ActorInfo
 
-module FSharp =
-    
-    open System
-    open System.IO
-    open System.Threading.Tasks
-    open Akka.Actor
-    open Akka.FSharp
-    
-    type PluginInfo = {
-        name        : string
-        company     : string
-        version     : Version
-        guid        : Guid
-        description : string
-        published   : DateTime
-        author      : string
-        copyright   : string
-        license     : string
-    }
-    
-    type PluginRequirement = {
-        name    : string
-        company : string
-        version : Version
-    }
 
+    (*
     type UnloadReason =
         | UserUnload
         | SystemUnload
@@ -77,7 +58,4 @@ module FSharp =
         onReport         : PluginEnvironment -> ReportReason -> unit // runs after every time a plugin is loaded or unloaded
         onUnload         : UnloadReason -> unit
     }
-
-    [<AbstractClass>]
-    type BasePlugin () =
-        abstract member Load : unit -> Plugin
+    *)
