@@ -5,7 +5,9 @@ module DiscordPlugin =
     
     open System
     open Akka.Actor
+    open Akka.FSharp
     open Mochi.Plugins.Types
+    open Mochi.Plugins.Types.FSharpUtil
 
     type DiscordPlugin () =
         inherit Plugin ()
@@ -22,6 +24,7 @@ module DiscordPlugin =
             this.Info.License    <- "MS-PL"
 
         override this.LoadSupervisor () =
-            let prop = Props.Create()
+            let prop = createProps Supervisor.spawnSupervisor
+            //let prop = Props.Create ()
             ActorInfo(prop)
 

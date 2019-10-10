@@ -24,6 +24,8 @@ type PluginRequirement () =
 type ActorInfo (prop : Props) =
     member val Props        = prop          with get, set
     member val ActorName    = String.Empty  with get, set
+    public new () =
+        ActorInfo (Props.Empty)
 
 [<AbstractClass>]
 type Plugin () =
@@ -34,7 +36,7 @@ type Plugin () =
     abstract PreLoad : unit -> unit
     abstract LoadSupervisor : unit -> ActorInfo
 
-module FSharp =
+module FSharpUtil =
     
     open Akka.FSharp
 
