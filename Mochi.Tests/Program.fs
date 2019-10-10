@@ -129,16 +129,7 @@ module Program =
         master <! "hey"
         master <! "hey2"
         (master, system)
-
-    [<AbstractClass>]
-    type MyBase () =
-        abstract Do : unit -> unit
-
-    type MyDerived () =
-        inherit MyBase ()
-        override this.Do () =
-            ()
-
+    
     [<MethodImpl(MethodImplOptions.NoInlining)>]
     let ``prelude pathos`` _ =
         setupLogging ()
