@@ -22,7 +22,8 @@ type PluginRequirement () =
     member val Version      = Version()     with get, set
 
 type ActorInfo (prop : Props) =
-    member val Props = prop with get, set
+    member val Props        = prop          with get, set
+    member val ActorName    = String.Empty  with get, set
 
 [<AbstractClass>]
 type Plugin () =
@@ -33,29 +34,14 @@ type Plugin () =
     abstract PreLoad : unit -> unit
     abstract LoadSupervisor : unit -> ActorInfo
 
-
-    (*
-    type UnloadReason =
-        | UserUnload
-        | SystemUnload
-        | PluginFault
-        | Reloading
+module FSharp =
     
-    type ReportReason =
-        | PluginUnloaded of PluginInfo * UnloadReason
-        | PluginLoaded of PluginInfo
+    open Akka.FSharp
 
-    type PluginEnvironment = {
-        plugins : list<PluginInfo>
-    }
+    let createProps (f : Actor<'Message> -> Cont<'Message, 'Returned>) =
+        let e = Linq.Expression.ToExpression(fun () -> new FunActor<'Message, 'Returned>(f))
+        Props.Create e
 
-    type Plugin = {
-        info             : PluginInfo
-        loadDependencies : list<PluginRequirement> // plugins that must be loaded before this one can run.
-        execDependencies : list<PluginRequirement> // plugins that must be running when this one is.
-        supervisor       : Actor<Object> -> unit
-        onLoad           : PluginEnvironment -> unit // runs once after all dependencies are resolved
-        onReport         : PluginEnvironment -> ReportReason -> unit // runs after every time a plugin is loaded or unloaded
-        onUnload         : UnloadReason -> unit
-    }
-    *)
+    let createPropsOpt (f : Actor<'Message> -> Cont<'Message, 'Returned>) (options : SpawnOption list) =
+        let p = createProps f
+        applySpawnOptions p options
