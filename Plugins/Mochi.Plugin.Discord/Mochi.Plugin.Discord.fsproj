@@ -21,9 +21,6 @@
     <ProjectReference Include="..\..\Mochi.Core\Mochi.Core.fsproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Mochi.Plugins.Types\Mochi.Plugins.Types.fsproj">
-      <Private>false</Private>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>

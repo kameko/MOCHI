@@ -11,7 +11,7 @@ module PluginLoader =
     open System.Runtime.Loader
     open System.Runtime.CompilerServices
     open System.Runtime.InteropServices
-    open Mochi.Plugins.Types
+    open Mochi.Core.Plugins
     open Logging
     
     type PluginLoadContextError =

@@ -1,5 +1,5 @@
 ﻿
-namespace Mochi.Plugins.Types
+namespace Mochi.Core.Plugins
 
 open System
 open System.Collections.Generic

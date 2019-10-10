@@ -10,9 +10,6 @@ EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Server", "Mochi.Server\Mochi.Server.fsproj", "{61DA7478-E2F6-4FA1-A630-21C42EE0F1D8}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Mochi.Tests", "Mochi.Tests\Mochi.Tests.fsproj", "{5935DDA1-A3AD-42EF-9E5A-B3B3C9C77CFD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A0DC7B09-83B8-445A-8A36-46F07721B631} = {A0DC7B09-83B8-445A-8A36-46F07721B631}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{37537792-3239-4B5A-9A8A-04239AE9E6E5}"
 EndProject

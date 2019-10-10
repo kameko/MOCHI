@@ -10,7 +10,6 @@
     <ProjectReference Include="..\Mochi.Core\Mochi.Core.fsproj" />
     <ProjectReference Include="..\Mochi.Client\Mochi.Client.fsproj" />
     <ProjectReference Include="..\Mochi.Server\Mochi.Server.fsproj" />
-    <ProjectReference Include="..\Plugins\Mochi.Plugin.Discord\Mochi.Plugin.Discord.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mochi.Tests.config" />

@@ -4,8 +4,8 @@ namespace Mochi.Plugin.Discord
 open System
 open Akka.Actor
 open Akka.FSharp
-open Mochi.Plugins.Types
-open Mochi.Plugins.Types.FSharp
+open Mochi.Core.Plugins
+open Mochi.Core.Plugins.FSharp
 
 type DiscordPlugin () =
     inherit Plugin ()

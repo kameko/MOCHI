@@ -4,7 +4,7 @@ using System;
 namespace Mochi.TestPlugin1
 {
     using System.Collections.Generic;
-    using Mochi.Plugins.Types;
+    using Mochi.Core.Plugins;
     using Akka.Actor;
 
     public class Plugin1 : Plugin
