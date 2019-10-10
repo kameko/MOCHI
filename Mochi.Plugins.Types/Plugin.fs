@@ -4,6 +4,7 @@ namespace Mochi.Plugins.Types
 open System
 open System.Collections.Generic
 open Akka.Actor
+open Akka.FSharp
 
 type PluginInfo () =
     member val Name         = String.Empty  with get, set
@@ -36,7 +37,7 @@ type Plugin () =
     abstract PreLoad : unit -> unit
     abstract LoadSupervisor : unit -> ActorInfo
 
-module FSharpUtil =
+module FSharp =
     
     open Akka.FSharp
 

@@ -7,7 +7,7 @@ module DiscordPlugin =
     open Akka.Actor
     open Akka.FSharp
     open Mochi.Plugins.Types
-    open Mochi.Plugins.Types.FSharpUtil
+    open Mochi.Plugins.Types.FSharp
 
     type DiscordPlugin () =
         inherit Plugin ()
