@@ -8,7 +8,7 @@ namespace Mochi.TestPlugin1
 
     public class Plugin1 : Plugin
     {
-        public override void Load()
+        public override void PreLoad()
         {
             throw new NotImplementedException();
         }

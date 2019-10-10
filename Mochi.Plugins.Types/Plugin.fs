@@ -26,7 +26,7 @@ type Plugin () =
     member val LoadDependencies = List<PluginRequirement>() with get, set
     member val ExecDependencies = List<PluginRequirement>() with get, set
 
-    abstract Load : unit -> unit
+    abstract PreLoad : unit -> unit
 
 module FSharp =
     

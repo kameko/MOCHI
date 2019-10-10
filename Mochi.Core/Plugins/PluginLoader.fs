@@ -20,6 +20,7 @@ module PluginLoader =
         | FileNotFound   of FileNotFoundException
         | Argument       of ArgumentException
         | FileLoad       of FileLoadException
+        | InvalidPlugin
         | Other          of Exception
     
     type PluginLoadContext (loadPath: String) =
@@ -126,18 +127,20 @@ module PluginLoader =
             let baseplugintype = Array.find (fun (t : Type) -> 
                     t.IsSubclassOf typeof<Plugin>) (exportedtypes) 
             let plugin = Activator.CreateInstance(baseplugintype) :?> Plugin
-            plugin.Load ()
+            plugin.PreLoad ()
             if isValidPlugin plugin then
-                Some plugin
+                Ok plugin
             else
-                None
+                Error InvalidPlugin
         with
-        | _ -> None
+        | e -> Error <| Other e
     
     let getPlugin (path : string) =
         let asm = loadAssembly path
         match asm with
         | Ok context ->
             let plugin = getPluginFromAssembly context
-            plugin
-        | _ -> None
+            match plugin with
+            | Ok p -> Ok p
+            | Error e -> Error e
+        | Error e -> Error e

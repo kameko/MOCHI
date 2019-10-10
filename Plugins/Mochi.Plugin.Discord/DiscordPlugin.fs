@@ -11,7 +11,7 @@ module DiscordPlugin =
     type DiscordPlugin () =
         inherit Plugin ()
 
-        override this.Load () =
+        override this.PreLoad () =
             this.Info.Name <- "Discord"
 
     (*
