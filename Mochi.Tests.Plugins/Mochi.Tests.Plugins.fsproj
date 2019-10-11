@@ -20,9 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mochi.Plugins.Types\Mochi.Plugins.Types.fsproj" />
-    <ProjectReference Include="..\Plugins\Mochi.Plugin.Discord\Mochi.Plugin.Discord.fsproj" />
-    <ProjectReference Include="..\Plugins\Mochi.TestPlugin1\Mochi.TestPlugin1.csproj" />
+    <ProjectReference Include="..\Modules\Mochi.Plugin.Discord\Mochi.Plugin.Discord.fsproj" />
+    <ProjectReference Include="..\Modules\Mochi.TestPlugin1\Mochi.TestPlugin1.csproj" />
   </ItemGroup>
 
 </Project>
