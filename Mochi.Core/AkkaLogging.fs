@@ -4,6 +4,7 @@ namespace Mochi.Core
 module AkkaLogging =
     
     open System
+    open System.Threading
     open System.Runtime.CompilerServices
     open System.Diagnostics
     open Akka.Actor
@@ -15,15 +16,18 @@ module AkkaLogging =
 
     let makeAkkaLogContext (sl : StructuredLog) (mailbox : Actor<'Message>) (la : ILoggingAdapter) =
         let mutable logger = la
-        logger <- logger.ForContext ("CallerName"       , sl.CallerName)
-        logger <- logger.ForContext ("CallerNamespace"  , sl.CallerNamespace)
-        logger <- logger.ForContext ("CallerFullName"   , sprintf "%s.%s" sl.CallerNamespace sl.CallerName)
-        logger <- logger.ForContext ("CallerFile"       , sl.CallerFile)
-        logger <- logger.ForContext ("CallerDirectory"  , sl.CallerDirectory)
-        logger <- logger.ForContext ("CallerLineNumber" , sl.CallerLineNumber)
-        logger <- logger.ForContext ("CallerFileNumber" , sprintf "%s:%i" sl.CallerFile sl.CallerLineNumber)
-        logger <- logger.ForContext ("ActorPath"        , sprintf "[%O]" mailbox.Self.Path)
-        logger <- logger.ForContext ("ActorName"        , mailbox.Self.Path.Name)
+        logger <- logger.ForContext ("CallerName"         , sl.CallerName)
+        logger <- logger.ForContext ("CallerNamespace"    , sl.CallerNamespace)
+        logger <- logger.ForContext ("CallerFullName"     , sprintf "%s.%s" sl.CallerNamespace sl.CallerName)
+        logger <- logger.ForContext ("CallerFile"         , sl.CallerFile)
+        logger <- logger.ForContext ("CallerDirectory"    , sl.CallerDirectory)
+        logger <- logger.ForContext ("CallerLineNumber"   , sl.CallerLineNumber)
+        logger <- logger.ForContext ("CallerFileNumber"   , sprintf "(%s:%i)" sl.CallerFile sl.CallerLineNumber)
+        logger <- logger.ForContext ("CallerThreadNumber" , sprintf "[%s]" ((sl.CallerThreadNumber.ToString ()).PadLeft(StructuredLog.ThreadPadding, '0')))
+        logger <- logger.ForContext ("ActorPath"          , sprintf "[%O]" mailbox.Self.Path)
+        logger <- logger.ForContext ("ActorName"          , mailbox.Self.Path.Name)
+        logger <- logger.ForContext ("FullFileInfo"       , sprintf "%s.%s (%s:%i)" sl.CallerNamespace sl.CallerName sl.CallerFile sl.CallerLineNumber)
+        logger <- logger.ForContext ("LIB"                , String.Empty)
         logger
 
     let getakkalogger (mailbox : Actor<'Message>) =

@@ -96,11 +96,12 @@ module Program =
         let mutable conf = LoggerConfiguration ()
         conf <- conf.MinimumLevel.Debug() //.MinimumLevel.ControlledBy(levelSwitch)
         conf <- conf.WriteTo.Console (outputTemplate = 
-            "[{Timestamp:HH:mm:ss.ff} {Level:u4}] " + 
-            "[{CallerFullName}({SourceContext}{CallerFileNumber})]{ActorPath}: " + 
+            "[{Timestamp:HH:mm:ss.ff} {Level:u3}] " + 
+            "{LIB}[{FullFileInfo}{SourceContext}]{CallerThreadNumber}{ActorPath}: " + 
             "{Message:lj}. {NewLine}{Exception}"
         )
         Log.Logger <- conf.CreateLogger ()
+        Log.Logger <- Log.Logger.ForContext ("LIB", "[LIB] ")
         Mochi.Core.GCMonitor.GCMonitor.LogMessage <- "Garbage collection occurred"
         ()
 
@@ -134,6 +135,7 @@ module Program =
         setupLogging ()
         syslog.info "MOCHI Test Environment"
         syslog.info <| sprintf "Running in %s mode" (releaseString ())
+        syslog.info <| sprintf "%i cores present" Environment.ProcessorCount
         Mochi.Core.GCMonitor.start ()
         let (master, system) = setupActors ()
 
@@ -146,7 +148,7 @@ module Program =
         //*)
 
         (* // Plugin (broken)
-        let plugin = getPlugin ".\\..\\..\\..\\..\\Plugins\\Mochi.Plugin.Discord\\bin\\Debug\\netcoreapp3.0\\Mochi.Plugin.Discord.dll"
+        let plugin = getPlugin ".\\..\\..\\..\\..\\Modules\\Mochi.Plugin.Discord\\bin\\Debug\\netcoreapp3.0\\Mochi.Plugin.Discord.dll"
         match plugin with
         | Ok p -> 
             syslog.info <| sprintf "Plugin loaded: %s" p.Info.Name

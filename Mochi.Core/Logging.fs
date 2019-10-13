@@ -4,6 +4,7 @@ namespace Mochi.Core
 module Logging =
 
     open System
+    open System.Threading
     open System.IO
     open System.Diagnostics
     open System.Reflection
@@ -13,19 +14,31 @@ module Logging =
     open Serilog
     
     type StructuredLog () =
-        let mutable _callerName       : string = String.Empty
-        let mutable _callerNamespace  : string = String.Empty
-        let mutable _callerFile       : string = String.Empty
-        let mutable _callerDirectory  : string = String.Empty
-        let mutable _callerLineNumber : int = 0
-        let mutable _logMessage       : string = String.Empty
-        let mutable _exception        : Exception = null
+        let mutable _callerName         : string = String.Empty
+        let mutable _callerNamespace    : string = String.Empty
+        let mutable _callerFile         : string = String.Empty
+        let mutable _callerDirectory    : string = String.Empty
+        let mutable _callerLineNumber   : int = 0
+        let mutable _callerThreadNumber : int = 0
+        let mutable _logMessage         : string = String.Empty
+        let mutable _exception          : Exception = null
 
-        static let mutable _isRelease : bool = true
+        static let mutable _isRelease     = true
+        static let mutable _threadPadding = 2
         
         static do
             _isRelease <- StructuredLog.IsReleaseMode ()
+            // get thread count for padding
+            match Environment.ProcessorCount with
+            | x when x > 99999 -> _threadPadding <- 6
+            | x when x > 9999  -> _threadPadding <- 5
+            | x when x > 999   -> _threadPadding <- 4
+            | x when x > 99    -> _threadPadding <- 3
+            | _                -> _threadPadding <- 2
 
+        static member ThreadPadding
+            with get ()    = _threadPadding
+            and  set value = _threadPadding <- value
         member this.CallerName
             with get ()    = _callerName
             and  set value = _callerName <- value
@@ -41,6 +54,9 @@ module Logging =
         member this.CallerLineNumber
             with get ()    = _callerLineNumber
             and  set value = _callerLineNumber <- value
+        member this.CallerThreadNumber
+            with get ()    = _callerThreadNumber
+            and  set value = _callerThreadNumber <- value
         member this.Exception
             with get ()    = _exception
             and  set value = _exception <- value
@@ -88,11 +104,12 @@ module Logging =
                 else
                     sl.CallerName       <- (stack.GetMethod ()).Name
                     sl.CallerNamespace  <- ((stack.GetMethod ()).ReflectedType).FullName
-            sl.CallerFile       <- Path.GetFileName (stack.GetFileName ())
-            sl.CallerDirectory  <- Path.GetDirectoryName (stack.GetFileName ())
-            sl.CallerLineNumber <- (stack.GetFileLineNumber ())
-            sl.LogMessage       <- msg
-            sl.Exception        <- excp
+            sl.CallerFile         <- Path.GetFileName (stack.GetFileName ())
+            sl.CallerDirectory    <- Path.GetDirectoryName (stack.GetFileName ())
+            sl.CallerLineNumber   <- (stack.GetFileLineNumber ())
+            sl.CallerThreadNumber <- Thread.CurrentThread.ManagedThreadId
+            sl.LogMessage         <- msg
+            sl.Exception          <- excp
             sl
         
         static member Create (scope, msg) =
@@ -103,13 +120,16 @@ module Logging =
         
         static member FormContext (sl : StructuredLog) =
             let mutable logger : ILogger = Log.Logger
-            logger <- logger.ForContext ("CallerName"       , sl.CallerName)
-            logger <- logger.ForContext ("CallerNamespace"  , sl.CallerNamespace)
-            logger <- logger.ForContext ("CallerFullName"   , sprintf "%s.%s" sl.CallerNamespace sl.CallerName)
-            logger <- logger.ForContext ("CallerFile"       , sl.CallerFile)
-            logger <- logger.ForContext ("CallerDirectory"  , sl.CallerDirectory)
-            logger <- logger.ForContext ("CallerLineNumber" , sl.CallerLineNumber)
-            logger <- logger.ForContext ("CallerFileNumber" , sprintf "%s:%i" sl.CallerFile sl.CallerLineNumber)
+            logger <- logger.ForContext ("CallerName"         , sl.CallerName)
+            logger <- logger.ForContext ("CallerNamespace"    , sl.CallerNamespace)
+            logger <- logger.ForContext ("CallerFullName"     , sprintf "%s.%s" sl.CallerNamespace sl.CallerName)
+            logger <- logger.ForContext ("CallerFile"         , sl.CallerFile)
+            logger <- logger.ForContext ("CallerDirectory"    , sl.CallerDirectory)
+            logger <- logger.ForContext ("CallerLineNumber"   , sl.CallerLineNumber)
+            logger <- logger.ForContext ("CallerFileNumber"   , sprintf "(%s:%i)" sl.CallerFile sl.CallerLineNumber)
+            logger <- logger.ForContext ("CallerThreadNumber" , sprintf "[%s]" ((sl.CallerThreadNumber.ToString ()).PadLeft(StructuredLog.ThreadPadding, '0')))
+            logger <- logger.ForContext ("FullFileInfo"       , sprintf "%s.%s (%s:%i)" sl.CallerNamespace sl.CallerName sl.CallerFile sl.CallerLineNumber)
+            logger <- logger.ForContext ("LIB"                , String.Empty) // we're calling this, so remove the "LIB" tag because it's not an external library
             logger
 
         static member LogInfo (scope, msg) =
