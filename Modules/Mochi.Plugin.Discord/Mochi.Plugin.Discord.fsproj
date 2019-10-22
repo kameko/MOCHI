@@ -6,8 +6,10 @@
 
   <ItemGroup>
     <Compile Include="Supervisor.fs" />
-    <Compile Include="ChannelActor.fs" />
     <Compile Include="DiscordPlugin.fs" />
+    <Compile Include="ChannelActor.fs" />
+    <Compile Include="DiscordEventActors.fs" />
+    <Compile Include="InitDiscord.fs" />
   </ItemGroup>
 
   <ItemGroup>

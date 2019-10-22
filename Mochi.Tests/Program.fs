@@ -87,6 +87,7 @@ module Program =
                 match message with
                 | _ -> 
                     akkalog.info mailbox <| sprintf "Got message: %O" message
+                    // mailbox.Unhandled ()
                     return! masterActor ()
             }
             masterActor ())
