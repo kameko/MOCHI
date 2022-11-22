@@ -14,7 +14,7 @@
     <Compile Include="Plugins\PluginLoader.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.4.0-beta2" />
+    <PackageReference Include="Akka" Version="1.4.46" />
     <PackageReference Include="Akka.FSharp" Version="1.4.0-beta2" />
     <PackageReference Include="Akka.Logger.Serilog" Version="1.3.10" />
     <PackageReference Include="Akka.Remote" Version="1.4.0-beta2" />
